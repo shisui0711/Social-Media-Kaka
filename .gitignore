@@ -1,0 +1,57 @@
+# .gitignore cho ASP.NET Core API và Next.js
+
+# ASP.NET Core
+## Tệp tin và thư mục build
+bin/
+obj/
+
+## Thư mục publish
+**/publish/
+**/wwwroot/
+
+## Visual Studio
+.vscode/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+## ASP.NET Configuration
+appsettings.*.json
+appsettings.json
+
+## Log, Backup, và các tệp tin tạm
+*.log
+*.ncrunch*
+*_ReSharper.*
+*.resharper
+*.sln.ide
+*~
+*.swp
+*.ide.*
+*.dbmdl
+*.VC.db
+.vs/
+
+# Next.js
+## Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+## Tệp tin build
+.next/
+out/
+
+## Tệp tin môi trường
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Các tệp khác không cần theo dõi
+.idea/
+.DS_Store
+docker-compose.yml

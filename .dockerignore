@@ -1,0 +1,37 @@
+# Ignore the build output
+**/bin/
+**/obj/
+
+# Ignore local development environment files
+*.local
+*.env
+.env.*
+
+# Ignore node_modules and log files
+**/node_modules/
+**/npm-debug.log
+**/yarn-debug.log
+**/yarn-error.log
+
+# Ignore temporary files
+**/*.test.ts
+**/*.spec.ts
+**/*.tmp
+**/*.swp
+**/*.swo
+
+# Ignore any IDE or editor-specific files
+.vscode/
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Ignore any Docker-related files
+Dockerfile
+docker-compose.yml
+*.dockerignore
+
+# Ignore build scripts and artifacts
+*.ps1
