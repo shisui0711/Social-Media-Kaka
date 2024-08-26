@@ -77,7 +77,7 @@ const ListMessage = ({ conversationId }: { conversationId: string }) => {
     console.log(error);
     return (
       <div className="flex-center h-[60vh]">
-        <p className="text-center text-destructive">
+        <p className="text-center text-destructive w-full">
           Có lỗi xảy ra. Hãy tải lại trang.
         </p>
       </div>

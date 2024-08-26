@@ -10,12 +10,16 @@ import {
 import { useRouter } from "next/navigation";
 import { updateUserProfile } from "./actions";
 import { PaginatedListOfPostDto } from "@/app/web-api-client";
+import { useApiClient } from "@/app/hooks/useApiClient";
+import { useAuthorization } from "@/providers/AuthorizationProvider";
 
 export function useUpdateProfileMutation() {
   const { toast } = useToast();
   const router = useRouter();
   const queryClient = useQueryClient();
   const { startUpload: startAvatarUpload } = useUploadThing("avatar");
+  const client = useApiClient();
+  const { user } = useAuthorization()
   const mutation = useMutation({
     mutationFn: async ({
       values,
@@ -31,7 +35,9 @@ export function useUpdateProfileMutation() {
     },
     onSuccess: async ([updatedUser, uploadResult]) => {
       const newAvatarUrl = uploadResult?.[0].serverData.avatarUrl;
-
+      if(newAvatarUrl){
+        await client.updateMyAvatar({avatarUrl: newAvatarUrl})
+      }
       const queryFilter: QueryFilters = {
         queryKey: ["post-feed"],
       };
@@ -67,7 +73,7 @@ export function useUpdateProfileMutation() {
         }
       );
 
-      router.push(`/profile/${updatedUser.userName}`);
+      router.refresh()
 
       toast({
         description: "Cập nhật thông tin thành công",

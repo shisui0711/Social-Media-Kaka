@@ -26,7 +26,7 @@ namespace Application.Posts.Queries.GetLikeInfo
 
         public async Task<LikeInfo> Handle(GetLikeInfoQuery request, CancellationToken cancellationToken)
         {
-            var data = await _context.Posts
+            var data = await _context.Posts.AsNoTracking()
             .Where(p => p.Id == request.PostId)
             .Select(p => new LikeInfo()
             {

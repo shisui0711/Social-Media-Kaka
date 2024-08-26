@@ -19,14 +19,10 @@ export const fileRouter = {
     // Case remove old avatar
     const oldAvatar = metadata.user.avatarUrl
     if (oldAvatar) {
-      const key = oldAvatar.split('/a/${process.env.NEXT_PUBLIC_UPLOADTHING_APP_ID}')[1]
+      const key = oldAvatar.split(`/a/${process.env.NEXT_PUBLIC_UPLOADTHING_APP_ID}`)[1]
       await new UTApi().deleteFiles(key)
     }
     const newAvatarUrl = file.url.replace('/f',`/a/${process.env.NEXT_PUBLIC_UPLOADTHING_APP_ID}`)
-    const token = cookies().get('token')?.value
-    if(!token) throw new UploadThingError("Unauthorized")
-    const client = await getApiClient(token);
-    await client.updateMyAvatar({avatarUrl: newAvatarUrl})
     return {avatarUrl: newAvatarUrl}
   }),
   attchement: f({

@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from "react";
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
   DialogHeader,
@@ -17,27 +16,42 @@ import { useDebounce } from "@/app/hooks/useDebounce";
 import UserResultButton from "./UserResultButton";
 import { UserDto } from "@/app/web-api-client";
 import { useApiClient } from "@/app/hooks/useApiClient";
+import { useQuery } from "@tanstack/react-query";
 
 const SearchMesssageButton = () => {
   const [search, setSearch] = useState("");
   const [results, setResults] = useState<UserDto[]>([]);
-  const debouncedValue = useDebounce(search, 500);
-  const [isLoading, setIsLoading] = useState(false);
+  const debouncedValue = useDebounce<string>(search, 500);
   const client = useApiClient();
   const [open, setOpen] = useState(false);
+  const {
+    data,
+    error,
+    isFetching
+  } = useQuery({
+    queryKey: ["search-friend", debouncedValue],
+    queryFn: () => client.getMyFriendByName(debouncedValue),
+    enabled: !!debouncedValue,
+    retry: true,
+    refetchOnWindowFocus: false,
+    staleTime: 1000 * 60 * 60, // 1 hours
+  })
+
   useEffect(() => {
-    if (debouncedValue) {
-      const fetchData = async () => {
-        setIsLoading(true);
-          await client
-          .getMyFriendByName(search)
-          .then((data) => setResults(data))
-          .catch(() => setResults([]))
-          .finally(() => setIsLoading(false));
-      };
-      fetchData();
+    if(data)
+      setResults(data)
+  },[data])
+
+  useEffect(() => {
+    if(error) setResults([])
+  },[error])
+
+  useEffect(()=>{
+    if(!open){
+      setSearch("")
+      setResults([])
     }
-  }, [debouncedValue, search, client]);
+  },[open])
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -63,7 +77,7 @@ const SearchMesssageButton = () => {
               />
             </div>
             <div className="flex flex-wrap gap-4 mt-4">
-              {isLoading ? (
+              {isFetching ? (
                 <Loader className="mx-auto animate-spin" />
               ) : (
                 <>

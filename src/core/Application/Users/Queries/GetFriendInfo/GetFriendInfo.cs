@@ -24,7 +24,7 @@ namespace Application.Users.Queries.GetFriendInfo
 
         public async Task<FriendInfo> Handle(GetFriendInfoQuery request, CancellationToken cancellationToken)
         {
-            var data = await _context.Users
+            var data = await _context.Users.AsNoTracking()
             .Where(x=>x.Id == request.UserId)
             .Include(x=>x.FriendRelationReceivers)
             .Include(x=>x.FriendRelationSenders)
@@ -43,7 +43,8 @@ namespace Application.Users.Queries.GetFriendInfo
                 .Where(o => o.SenderId == _currentUser.Id && o.ReceiverId == request.UserId && o.Accepted)
                 .Select(x=> new { x.SenderId,x.ReceiverId})
                 .ToList().Count > 0
-            }).FirstOrDefaultAsync();
+            })
+            .FirstOrDefaultAsync();
             Guard.Against.NotFound(request.UserId,data);
             return data;
         }

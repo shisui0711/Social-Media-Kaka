@@ -4,13 +4,11 @@ import InfiniteScrollContainer from "@/components/InfiniteScrollContainer";
 import PostsLoadingSkeleton from "@/components/posts/PostsLoadingSkeleton";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { Loader } from "lucide-react";
-import { useAuthorization } from "@/providers/AuthorizationProvider";
 import PostComponent from "@/components/posts/Post";
 import { useApiClient } from "../hooks/useApiClient";
 import { PaginatedListOfPostDto } from "../web-api-client";
 
 export default function ForYouFeed() {
-  const { token } = useAuthorization()
   const client = useApiClient()
   const {
     data,
@@ -50,7 +48,7 @@ export default function ForYouFeed() {
     console.log(error);
     return (
       <div className="flex-center h-[60vh]">
-        <p className="text-center text-destructive">
+        <p className="text-center text-destructive w-full">
           Có lỗi xảy ra khi tải bài viết. Hãy tải lại trang.
         </p>
       </div>

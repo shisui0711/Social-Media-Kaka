@@ -3,10 +3,8 @@
 import InfiniteScrollContainer from "@/components/InfiniteScrollContainer";
 import Post from "@/components/posts/Post";
 import PostsLoadingSkeleton from "@/components/posts/PostsLoadingSkeleton";
-import kyInstance from "@/lib/ky";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { Loader } from "lucide-react";
-import { BASE_API_URL } from "../../app.config";
 import { useApiClient } from "@/app/hooks/useApiClient";
 
 export default function Bookmarks() {
@@ -47,7 +45,7 @@ export default function Bookmarks() {
   if (status === "error") {
     return (
       <div className="flex-center h-[60vh]">
-        <p className="text-center text-destructive">
+        <p className="text-center text-destructive w-full">
           Có lỗi xảy ra khi tải bài viết. Hãy tải lại trang.
         </p>
       </div>

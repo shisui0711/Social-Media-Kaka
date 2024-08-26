@@ -39,8 +39,10 @@ namespace Application.Messages.Commands.CreateMessage
                 ConversationId = request.ConversationId
             })).Entity;
             await _context.SaveChangesAsync(cancellationToken);
-
-            return _mapper.Map<MessageDto>(message);
+            return await _context.Messages.AsNoTracking().Where(x=>x.Id == message.Id)
+                    .AsSplitQuery()
+                    .ProjectTo<MessageDto>(_mapper.ConfigurationProvider)
+                    .FirstAsync();
         }
     }
 }

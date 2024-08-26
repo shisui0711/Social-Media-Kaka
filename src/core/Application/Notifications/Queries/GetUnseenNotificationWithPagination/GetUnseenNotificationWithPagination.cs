@@ -26,7 +26,8 @@ namespace Application.Notifications.Queries.GetUnseenNotificationWithPagination
 
         public async Task<PaginatedList<NotificationDto>> Handle(GetUnseenNotificationWithPaginationQuery request, CancellationToken cancellationToken)
         {
-            return await _context.Notifications.Where(x=>x.RecipientId == _currentUser.Id && x.Seen == false)
+            return await _context.Notifications.AsNoTracking()
+                    .Where(x=>x.RecipientId == _currentUser.Id && x.Seen == false)
                     .ProjectTo<NotificationDto>(_mapper.ConfigurationProvider)
                     .OrderByDescending(x=>x.Created)
                     .PaginatedListAsync(request.PageNumber, request.PageSize);

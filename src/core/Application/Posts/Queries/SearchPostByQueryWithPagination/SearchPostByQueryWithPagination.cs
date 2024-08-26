@@ -27,8 +27,9 @@ namespace Application.Posts.Queries.SearchPostByQueryWithPagination
         public async Task<PaginatedList<PostDto>> Handle
         (SearchPostByQueryWithPaginationQuery request, CancellationToken cancellationToken)
         {
-            return await _context.Posts.Where(x => x.Content.Contains(request.q))
+            return await _context.Posts.AsSplitQuery()
             .ProjectTo<PostDto>(_mapper.ConfigurationProvider)
+            .Where(x => x.Content.Contains(request.q))
             .OrderByDescending(x => x.Created)
             .PaginatedListAsync(request.PageNumber,request.PageSize);
         }

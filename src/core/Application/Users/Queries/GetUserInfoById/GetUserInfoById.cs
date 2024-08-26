@@ -26,7 +26,8 @@ namespace Application.Users.Queries.GetUserInfoById
 
         public async Task<UserDto> Handle(GetUserInfoByIdQuery request, CancellationToken cancellationToken)
         {
-            var user = await _context.Users.Where(x => x.Id == request.UserId)
+            var user = await _context.Users.AsNoTracking()
+            .Where(x => x.Id == request.UserId).AsSplitQuery()
             .ProjectTo<UserDto>(_mapper.ConfigurationProvider)
             .FirstOrDefaultAsync();
             Guard.Against.NotFound(request.UserId, user);

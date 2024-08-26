@@ -81,6 +81,7 @@ namespace WebApi
             {
                 var secret = configuration.GetValue<string>("Jwt:Key");
                 Guard.Against.NullOrEmpty(secret, nameof(secret));
+                options.SaveToken = true;
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidIssuer = configuration.GetValue<string>("Jwt:Issuer"),
@@ -91,6 +92,24 @@ namespace WebApi
                     ValidateIssuer = true,
                     ValidateIssuerSigningKey = true
                 };
+                options.Events = new JwtBearerEvents
+            {
+                OnMessageReceived = context =>
+                {
+                    var accessToken = context.Request.Query["access_token"];
+
+                    // If the request is for our hub...
+                    var path = context.HttpContext.Request.Path;
+                    if (!string.IsNullOrEmpty(accessToken) &&
+                        path.StartsWithSegments("/project-hub"))
+                    {
+                        // Read the token out of the query string
+                        context.Token = accessToken;
+                    }
+                    //Console.WriteLine($"Token received: {context.Token}");
+                    return Task.CompletedTask;
+                }
+            };
             });
 
             services

@@ -6,10 +6,19 @@ import {
   SheetContent,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { Bell, Bookmark, Home, Menu, MessageCircle, User } from "lucide-react";
+import {
+  Bell,
+  Bookmark,
+  Home,
+  Menu,
+  MessageCircle,
+  User,
+  UsersRound,
+} from "lucide-react";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { useAuthorization } from "@/providers/AuthorizationProvider";
+import UserAvatar from "../UserAvatar";
 
 const MobileNav = () => {
   const { user } = useAuthorization();
@@ -25,12 +34,7 @@ const MobileNav = () => {
             href={`/profile/${user.userName}`}
             className="flex items-center gap-3 rounded-2xl p-1 hover:bg-background"
           >
-            <Avatar>
-              <AvatarImage src={user.avatarUrl} className="" />
-              <AvatarFallback>
-                <User />
-              </AvatarFallback>
-            </Avatar>
+            <UserAvatar avatarUrl={user.avatarUrl} />
             <span>{user.displayName}</span>
           </Link>
         </SheetClose>
@@ -59,6 +63,15 @@ const MobileNav = () => {
           >
             <Bookmark />
             <span>Đã lưu</span>
+          </Link>
+        </SheetClose>
+        <SheetClose asChild>
+          <Link
+            href="/friends"
+            className="flex items-center gap-3 rounded-2xl p-3 hover:bg-background"
+          >
+            <UsersRound />
+            <span>Bạn bè</span>
           </Link>
         </SheetClose>
       </SheetContent>

@@ -38,8 +38,10 @@ namespace Application.Users.Commands.UnFriend
                 _context.FriendRelations.Remove(friend);
 
                 var notifications =
-                    _context.Notifications.Where(x => x.IssuerId == _currentUser.Id
-                    && x.RecipientId == request.UserId &&
+                    _context.Notifications.Where(x =>
+                    ((x.IssuerId == _currentUser.Id && x.RecipientId == request.UserId) ||
+                    (x.IssuerId == request.UserId && x.RecipientId == _currentUser.Id))
+                    &&
                     (x.Type == NotificationTypes.ADDFRIEND || x.Type == NotificationTypes.ACCEPTFRIEND));
                 _context.Notifications.RemoveRange(notifications);
 

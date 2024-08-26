@@ -28,7 +28,9 @@ namespace Application.Users.Queries.GetMyFriendByName
         public async Task<IEnumerable<UserDto>> Handle(GetMyFriendByNameQuery request, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(request.Name)) return new List<UserDto>();
-            return await _context.Users.Where(x => x.DisplayName.ToLower().Contains(request.Name.ToLower()))
+            return await _context.Users.AsNoTracking()
+                .Where(x => x.DisplayName.ToLower().Contains(request.Name.ToLower()))
+                .AsSplitQuery()
                 .ProjectTo<UserDto>(_mapper.ConfigurationProvider)
                 .Where(x =>
                     x.FriendRelationSenders
@@ -39,7 +41,8 @@ namespace Application.Users.Queries.GetMyFriendByName
                     .Where(o => o.SenderId == _currentUser.Id && o.ReceiverId == x.Id && o.Accepted)
                     .Select(x=> new { x.SenderId,x.ReceiverId})
                     .ToList().Count > 0
-                ).ToListAsync();
+                )
+                .ToListAsync();
         }
     }
 }

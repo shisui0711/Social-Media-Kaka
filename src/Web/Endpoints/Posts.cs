@@ -72,7 +72,8 @@ namespace WebApi.Endpoints
         public Task<PostDto> RemovePost(ISender sender, [FromRoute] string id)
         => sender.Send(new RemovePostCommand(){PostId = id});
 
-        public Task<PostDto> GetPostInfo(ISender sender, [AsParameters] GetPostInfoQuery query) => sender.Send(query);
+        public Task<PostDto> GetPostInfo(ISender sender, [FromRoute] string id)
+        => sender.Send(new GetPostInfoQuery(){PostId = id});
 
         public Task<LikeInfo> GetLikeInfo(ISender sender, [AsParameters] GetLikeInfoQuery query) => sender.Send(query);
 

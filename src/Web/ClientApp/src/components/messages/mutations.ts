@@ -97,7 +97,7 @@ export function useDeleteConversationMutation() {
 
   const mutation = useMutation({
     mutationFn: deleteConversation,
-    onSuccess: async (deletedCoversation: CommentDto) => {
+    onSuccess: async (deletedCoversation: ConversationDto) => {
       const queryKey: QueryKey = ["conversations"];
 
       await queryClient.cancelQueries({ queryKey });

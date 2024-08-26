@@ -6,7 +6,7 @@ import { QueryKey, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "./ui/button";
 import { useAuthorization } from "@/providers/AuthorizationProvider";
 import { useSignalR } from "@/providers/SignalRProvider";
-import { FollowInfo, FriendInfo } from "@/app/web-api-client";
+import { FriendInfo } from "@/app/web-api-client";
 import { useApiClient } from "@/app/hooks/useApiClient";
 import useFriendInfo from "@/app/hooks/useFriendInfo";
 
@@ -20,7 +20,7 @@ const FriendButton = ({ userId, initialState }: Props) => {
   const client = useApiClient();
   const { data } = useFriendInfo(userId, initialState);
   const { toast } = useToast();
-  const { sendNotification } = useSignalR()
+  const { sendNotification, sendFriendRequest } = useSignalR()
 
   const queryClient = useQueryClient();
   const queryKey: QueryKey = ["friend-info", userId];
@@ -35,17 +35,16 @@ const FriendButton = ({ userId, initialState }: Props) => {
       const previousState = queryClient.getQueryData<FriendInfo>(queryKey);
 
       queryClient.setQueryData<FriendInfo>(queryKey, () => ({
-        friends:
-          (previousState?.friends || 0) +
-          (previousState?.isFriend ? - 1 : 1),
+        friends: previousState?.friends || 0,
         isSended: !previousState?.isSended,
-        isFriend: !previousState?.isFriend
+        isFriend: !!previousState?.isFriend
       }));
       return {previousState}
     },
     onSuccess(){
-      if(data.isSended){
+      if(!data.isFriend && data.isSended){
         sendNotification(userId, `${signedInUser.displayName} đã gửi lời mời kết bạn`)
+        sendFriendRequest(userId)
       }else if(data.isFriend){
         sendNotification(userId, `${signedInUser.displayName} đã chấp nhận lời mời kết bạn`)
       }

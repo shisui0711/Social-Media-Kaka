@@ -23,8 +23,10 @@ namespace Application.Users.Queries.GetMyInfo
 
         public async Task<MyUserDto> Handle(GetMyInfoQuery request, CancellationToken cancellationToken)
         {
-            var user = await _context.Users.ProjectTo<MyUserDto>(_mapper.ConfigurationProvider)
-                    .FirstOrDefaultAsync(x => x.Id == _currentUser.Id, cancellationToken);
+            var user = await _context.Users.Where(x=>x.Id == _currentUser.Id)
+                    .AsSplitQuery().ProjectTo<MyUserDto>(_mapper.ConfigurationProvider)
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync();
             return user!;
         }
     }

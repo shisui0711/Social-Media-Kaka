@@ -23,7 +23,7 @@ namespace Application.Comments.Queries.GetCommentLikeInfo
 
         public async Task<LikeInfo> Handle(GetCommentLikeInfoQuery request, CancellationToken cancellationToken)
         {
-            var data = await _context.Comments
+            var data = await _context.Comments.AsNoTracking()
             .Where(p => p.Id == request.CommentId)
             .Select(p => new LikeInfo()
             {

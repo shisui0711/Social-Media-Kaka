@@ -10,6 +10,7 @@ import { usePathname } from "next/navigation";
 import NotificationContent from "@/app/(main)/notifications/NotificationContent";
 import { useSignalR } from "@/providers/SignalRProvider";
 import { useApiClient } from "@/app/hooks/useApiClient";
+import { useQuery } from "@tanstack/react-query";
 
 const NotificationButton = () => {
   const [open, setOpen] = useState(false)
@@ -38,12 +39,20 @@ const NotificationButton = () => {
     }
   },[connection])
 
+  const {
+    data,
+  } = useQuery({
+    queryKey: ["notification-unseen"],
+    queryFn: ()=>client.getTotalUnseenMyNotification(),
+    refetchOnWindowFocus: false,
+    staleTime: 1000 * 60 * 60 //1 hours
+  })
+
   useEffect(()=>{
-    client.getTotalUnseenMyNotification()
-          .then(data=>{
-            setCountNotifications(data)
-          })
-  },[client])
+    if(data){
+      setCountNotifications(data)
+    }
+  },[data])
 
   const pathname = usePathname()
   return (

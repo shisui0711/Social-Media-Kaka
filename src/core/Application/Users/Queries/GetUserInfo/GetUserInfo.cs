@@ -1,6 +1,6 @@
 
 
-using Application.Common.Exceptions;
+
 using Application.Common.Interfaces;
 using Application.Common.Models;
 using Application.Common.Security;
@@ -26,7 +26,8 @@ namespace Application.Users.Queries.GetUserInfo
 
         public async Task<UserDto> Handle(GetUserInfoQuery request, CancellationToken cancellationToken)
         {
-            var user = await _context.Users.Where(x => x.UserName == request.UserName)
+            var user = await _context.Users.AsNoTracking()
+            .Where(x => x.UserName == request.UserName).AsSplitQuery()
             .ProjectTo<UserDto>(_mapper.ConfigurationProvider)
             .FirstOrDefaultAsync();
             Guard.Against.NotFound(request.UserName, user);

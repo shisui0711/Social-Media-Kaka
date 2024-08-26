@@ -27,7 +27,7 @@ namespace Application.Bookmarks.Queries.GetBookmarkInfo
         public Task<BookmarkInfo> Handle(GetBookmarkInfoQuery request, CancellationToken cancellationToken)
         {
             return Task.FromResult(new BookmarkInfo {
-                isBookmarkedByUser = _context.Bookmarks
+                isBookmarkedByUser = _context.Bookmarks.AsNoTracking()
                 .Count(x => x.PostId == request.PostId && x.UserId == _currentUser.Id) > 0
             });
         }

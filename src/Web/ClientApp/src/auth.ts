@@ -21,7 +21,6 @@ export const validateRequest = cache(
       if(!user) return { user: null, token: null}
       return { user, token }
     } catch (error) {
-      console.log(error)
       return { user: null, token: null}
     }
   }

@@ -49,7 +49,7 @@ export default function UserPosts({userId}: UserPostsProps) {
   if (status === "error") {
     return (
       <div className="flex-center h-[60vh]">
-        <p className="text-center text-destructive">
+        <p className="text-center text-destructive w-full">
           Có lỗi xảy ra khi tải bài viết. Hãy tải lại trang.
         </p>
       </div>

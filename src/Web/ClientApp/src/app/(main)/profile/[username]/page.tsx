@@ -53,11 +53,7 @@ export async function generateMetadata({
 const ProfilePage = async ({ params: { username } }: ProfilePageProps) => {
   const { user: signedInUser } = await validateRequest();
   if (!signedInUser)
-    return (
-      <div className="text-destructive">
-        Để truy cập vào trang này. Hãy đang nhập
-      </div>
-    );
+    return redirect("/sign-in")
 
   const user = await getUser(username);
 

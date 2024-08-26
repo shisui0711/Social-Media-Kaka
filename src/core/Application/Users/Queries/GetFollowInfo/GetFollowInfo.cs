@@ -24,7 +24,8 @@ namespace Application.Users.Queries.GetFollowInfo
 
         public async Task<FollowInfo> Handle(GetFollowInfoQuery request, CancellationToken cancellationToken)
         {
-            var data = await _context.Users.Where(x=>x.Id == request.UserId)
+            var data = await _context.Users.AsNoTracking()
+            .Where(x=>x.Id == request.UserId)
             .Select(x => new FollowInfo
             {
                 followers = x.Followers.Count,

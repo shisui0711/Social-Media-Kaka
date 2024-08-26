@@ -33,6 +33,18 @@ export default function Notification({ notification }: NotificationProps) {
           icon: <ArrowBigUp className="size-7 fill-primary text-primary" />,
           href: `/posts/${notification?.post?.id}`,
         }
+      case "ADDFRIEND":
+        return {
+          message: `${notification.issuer?.displayName} đã gửi lời mời kết bạn`,
+          icon: <UserRoundPlus className="size-7 text-primary " />,
+          href: `/profile/${notification.issuer?.userName}`,
+        }
+      case "ACCEPTFRIEND":
+        return {
+          message: `${notification.issuer?.displayName} đã chấp nhận lời mời kết bạn`,
+          icon: <UserRoundPlus className="size-7 text-primary " />,
+          href: `/profile/${notification.issuer?.userName}`,
+        }
       default:
         throw new Error("Invalid notification type");
     }

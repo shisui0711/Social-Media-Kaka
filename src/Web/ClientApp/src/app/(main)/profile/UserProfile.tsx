@@ -8,7 +8,8 @@ import { formatNumber } from "@/lib/utils";
 import React from "react";
 import EditProfileButton from "./[username]/EditProfileButton";
 import Linkify from "@/components/Linkify";
-import { FollowInfo, UserDto } from "@/app/web-api-client";
+import { FollowInfo, FriendInfo, UserDto } from "@/app/web-api-client";
+import FriendCount from "@/components/FriendCount";
 
 interface UserProfileProps {
   user: UserDto;
@@ -22,6 +23,14 @@ const UserProfile = async ({ user, signedInUserId }: UserProfileProps) => {
       (follower) => follower.followerId === signedInUserId
     ),
   };
+  const friendInfo: FriendInfo = {
+    friends: user.friendRelationReceivers.filter(x=>x.accepted).length
+    + user.friendRelationSenders.filter(x=>x.accepted).length,
+    isSended: user.friendRelationReceivers.some(x=>x.senderId === signedInUserId),
+    isFriend: user.friendRelationReceivers.some(x=>x.senderId === signedInUserId && x.accepted) ||
+              user.friendRelationSenders.some(x=>x.receiverId === signedInUserId && x.accepted),
+  }
+
   return (
     <div className="h-fit w-full space-y-5 rounded-2xl bg-card p-5 shadow-sm">
       <UserAvatar
@@ -43,6 +52,7 @@ const UserProfile = async ({ user, signedInUserId }: UserProfileProps) => {
               </span>
             </span>
             <FollowerCount userId={user.id} initialState={followerInfo} />
+            <FriendCount userId={user.id} initialState={friendInfo} />
           </div>
         </div>
         {user.id === signedInUserId ? (

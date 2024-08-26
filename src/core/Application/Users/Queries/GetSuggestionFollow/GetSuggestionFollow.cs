@@ -24,8 +24,12 @@ namespace Application.Users.Queries.GetSuggestionFollow
 
         public async Task<IEnumerable<UserDto>> Handle(GetSuggestionFollowQuery request, CancellationToken cancellationToken)
         {
-            return await _context.Users.AsSplitQuery().ProjectTo<UserDto>(_mapper.ConfigurationProvider)
-            .Where(x => x.Id != _currentUser.Id && !x.Followers.Any(x => x.FollowerId == _currentUser.Id))
+            return await _context.Users.Where(x=>x.Id != _currentUser.Id)
+            .AsSplitQuery().ProjectTo<UserDto>(_mapper.ConfigurationProvider)
+            .Where(x =>
+            !x.FriendRelationSenders.Any(x=>x.SenderId == _currentUser.Id || x.ReceiverId == _currentUser.Id) &&
+            !x.FriendRelationReceivers.Any(x=>x.ReceiverId == _currentUser.Id || x.SenderId == _currentUser.Id)
+            )
             .OrderByDescending(x => x.DisplayName)
             .Take(5).AsNoTracking().ToListAsync();
         }

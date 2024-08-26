@@ -1,10 +1,7 @@
 "use client"
 
 import React, { useEffect, useState } from 'react'
-import { useAuthorization } from '@/providers/AuthorizationProvider'
 import { useInfiniteQuery } from '@tanstack/react-query'
-import kyInstance from '@/lib/ky'
-import { BASE_API_URL } from '../../app/app.config'
 import ConversationSkeleton from './ConversationSkeleton'
 import InfiniteScrollContainer from '../InfiniteScrollContainer'
 import ConversationComponent from './Conversation'
@@ -66,7 +63,7 @@ const ListConversation = () => {
     console.log(error);
     return (
       <div className="flex-center h-[60vh]">
-        <p className="text-center text-destructive">
+        <p className="text-center text-destructive w-full">
           Có lỗi xảy ra. Hãy tải lại trang.
         </p>
       </div>

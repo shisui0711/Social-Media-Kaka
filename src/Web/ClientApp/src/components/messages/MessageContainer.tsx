@@ -11,19 +11,28 @@ import { Circle } from "lucide-react";
 import ListMessage from "./ListMessage";
 import { ConversationDto, UserDto } from "@/app/web-api-client";
 import { useApiClient } from "@/app/hooks/useApiClient";
+import { useQuery } from "@tanstack/react-query";
 
 interface Props {
   conversation: ConversationDto;
 }
 
 const MessageContainer = ({ conversation }: Props) => {
-  const [isLoading, setIsLoading] = React.useState(true);
-  const [collaborator, setCollaborator] = useState<UserDto>()
   const { user } = useAuthorization()
   const client = useApiClient();
   const { connection, checkStatus } = useSignalR()
   const [status, setStatus] = useState(false)
   const collaboratorId = conversation.conversationMembers.find((x) => x.userId !== user.id)!.userId
+  const {
+    data,
+    isPending,
+    isError
+  } = useQuery({
+    queryKey: ["user-info", collaboratorId],
+    queryFn: ()=>client.getUserInfoById(collaboratorId),
+    refetchOnWindowFocus: false,
+    staleTime: 1000 * 60 * 60 //1 hours
+  })
 
   useEffect(()=>{
     checkStatus(collaboratorId).then((isOnline)=>{
@@ -41,16 +50,10 @@ const MessageContainer = ({ conversation }: Props) => {
     }
   },[collaboratorId, connection])
 
-  useEffect(()=>{
-    client.getUserInfoById(collaboratorId)
-    .then(data=>setCollaborator(data))
-    .catch(err=>console.log(err))
-    .finally(()=>setIsLoading(false))
-  },[collaboratorId, client])
   return (
     <section className="relative h-full overflow-y-auto flex flex-col justify-between">
       <div className="sticky rounded-t-2xl top-0 w-full h-16 bg-card shadow-md flex items-center justify-between px-4">
-        {isLoading ? (
+        {isPending ? (
           <div className="flex items-center space-x-4">
           <Skeleton className="h-12 w-12 rounded-full" />
           <div className="space-y-2">
@@ -62,7 +65,7 @@ const MessageContainer = ({ conversation }: Props) => {
           <div className="flex gap-2 items-center">
           <UserAvatar />
           <div className="flex flex-col">
-            <p className="font-semibold text-sm">{collaborator?.displayName}</p>
+            <p className="font-semibold text-sm">{data?.displayName}</p>
             {
               status ? (
                 <div className="flex items-center gap-1"><Circle size={10} className="text-green-500 fill-green-500" /><p className="text-xs font-medium">Trực tuyến</p></div>

@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { PropsWithChildren } from "react";
-import FollowButton from "./FollowButton";
 import FollowerCount from "./FollowerCount";
 import Linkify from "./Linkify";
 import {
@@ -13,7 +12,9 @@ import {
 } from "./ui/tooltip";
 import UserAvatar from "./UserAvatar";
 import { useAuthorization } from "@/providers/AuthorizationProvider";
-import { FollowInfo, UserDto } from "@/app/web-api-client";
+import { FollowInfo, FriendInfo, UserDto } from "@/app/web-api-client";
+import FriendCount from "./FriendCount";
+import FriendButton from "./FriendButton";
 
 interface UserTooltipProps extends PropsWithChildren {
   user: UserDto;
@@ -30,6 +31,14 @@ export default function UserTooltip({ children, user, className }: UserTooltipPr
     ),
   };
 
+  const friendInfo: FriendInfo = {
+    friends: user.friendRelationReceivers.filter(x=>x.accepted).length
+    + user.friendRelationSenders.filter(x=>x.accepted).length,
+    isSended: user.friendRelationReceivers.some(x=>x.senderId === signInUser.id),
+    isFriend: user.friendRelationReceivers.some(x=>x.senderId === signInUser.id && x.accepted) ||
+              user.friendRelationSenders.some(x=>x.receiverId === signInUser.id && x.accepted),
+  }
+
   return (
     <TooltipProvider>
       <Tooltip>
@@ -41,7 +50,7 @@ export default function UserTooltip({ children, user, className }: UserTooltipPr
                 <UserAvatar size={70} avatarUrl={user.avatarUrl} />
               </Link>
               {signInUser.id !== user.id && (
-                <FollowButton userId={user.id} initialState={followerState} />
+                <FriendButton userId={user.id} initialState={friendInfo} />
               )}
             </div>
             <div>
@@ -60,6 +69,7 @@ export default function UserTooltip({ children, user, className }: UserTooltipPr
               </Linkify>
             )}
             <FollowerCount userId={user.id} initialState={followerState} />
+            <FriendCount userId={user.id} initialState={friendInfo}/>
           </div>
         </TooltipContent>
       </Tooltip>

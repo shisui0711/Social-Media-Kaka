@@ -26,11 +26,12 @@ namespace Application.Posts.Queries.GetPostInfo
 
         public async Task<PostDto> Handle(GetPostInfoQuery request, CancellationToken cancellationToken)
         {
-            var post = await _context.Posts.Where(x => x.Id == request.PostId).AsSplitQuery()
+            var post = await _context.Posts.AsNoTracking()
+            .Where(x => x.Id == request.PostId).AsSplitQuery()
             .ProjectTo<PostDto>(_mapper.ConfigurationProvider)
             .FirstOrDefaultAsync();
             Guard.Against.NotFound(request.PostId,post);
-            return _mapper.Map<PostDto>(post);
+            return post;
         }
     }
 }

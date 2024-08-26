@@ -30,10 +30,13 @@ namespace Application.Messages.Queries.GetMyMessagesWithPagination
 
         public async Task<PaginatedList<MessageDto>> Handle(GetMyMessagesWithPaginationQuery request, CancellationToken cancellationToken)
         {
-            var res = _context.Messages.Include(x=>x.Conversation).ThenInclude(x=>x.ConversationMembers)
-                .Where(m => m.ConversationId == request.ConversationId &&
-                m.Conversation.ConversationMembers.Any(cm => cm.UserId == _currentUser.Id));
-            return  await  res.ProjectTo<MessageDto>(_mapper.ConfigurationProvider)
+            return await _context.Messages
+                .AsNoTracking()
+                .Where(x => x.ConversationId == request.ConversationId)
+                .AsSplitQuery()
+                .Include(x => x.Conversation).ThenInclude(x => x.ConversationMembers)
+                .Where(m => m.Conversation.ConversationMembers.Any(cm => cm.UserId == _currentUser.Id))
+                .ProjectTo<MessageDto>(_mapper.ConfigurationProvider)
                 .OrderBy(m => m.Created)
                 .PaginatedListAsync(request.PageNumber, request.PageSize);
         }

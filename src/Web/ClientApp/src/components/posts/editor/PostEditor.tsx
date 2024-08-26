@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import { ImageIcon, Loader, X } from "lucide-react";
+import { ImageIcon, Loader, SmilePlus, X } from "lucide-react";
 import { useSubmitPostMutation } from "./mutations";
 import useMediaUpload from "./useMediaUpload";
 import { Attachment } from "@/types";
@@ -22,6 +22,12 @@ import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { UploadProgress } from "@/components/ui/UploadProgress";
 import { useDropzone } from "@uploadthing/react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import EmojiPicker from "emoji-picker-react";
 
 const PostEditor = () => {
   const { user } = useAuthorization();
@@ -63,16 +69,21 @@ const PostEditor = () => {
       blockSeparator: "\n",
     }) || "";
 
+  const handleEmojiClick = (emoji: string) => {
+    editor?.chain().focus().insertContent(emoji).run();
+  }
+
   const onSubmit = () => {
     try {
       mutation.mutate(
         {
           content,
           medias: attachments
-          .filter(x=>x.mediaUrl !== undefined).map((a) => ({
-            mediaUrl: a.mediaUrl!,
-            type: a.type.split('/')[0].toUpperCase()
-          })),
+            .filter((x) => x.mediaUrl !== undefined)
+            .map((a) => ({
+              mediaUrl: a.mediaUrl!,
+              type: a.type.split("/")[0].toUpperCase(),
+            })),
         },
         {
           onSuccess: (data) => {
@@ -91,7 +102,7 @@ const PostEditor = () => {
     const files = Array.from(e.clipboardData.items)
       .filter((item) => item.kind === "file")
       .map((item) => item.getAsFile()) as File[];
-    startUpload(files)
+    startUpload(files);
   };
   return (
     <div className="flex flex-col gap-5 rounded-2xl bg-card p-5 shadow-sm">
@@ -152,13 +163,25 @@ const PostEditor = () => {
                 </div>
               )}
               <Separator />
-              <div className="flex gap-3 items-center">
+              <div className="flex gap-3 items-center justify-between">
                 <AddAttachmentsButton
                   onFilesSelected={startUpload}
                   disabled={isUploading || attachments.length >= 5}
                 />
+                <DropdownMenu>
+                  <DropdownMenuTrigger>
+                    <Button variant="ghost"
+                      size="icon"
+                    >
+                      <SmilePlus className="text-yellow-500" />
+                    </Button>
+                    </DropdownMenuTrigger>
+                  <DropdownMenuContent side="right">
+                    <EmojiPicker onEmojiClick={(e)=>handleEmojiClick(e.emoji)}/>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
-              <Separator className="my-3" />
+              <Separator className="mb-3" />
               <Button
                 onClick={onSubmit}
                 disabled={!content.trim() || mutation.isPending || isUploading}
@@ -230,12 +253,7 @@ const AttachmentPreview = ({
   const src = URL.createObjectURL(file);
 
   return (
-    <div
-      className={cn(
-        "relative ",
-        isUploading && "opacity-50"
-      )}
-    >
+    <div className={cn("relative ", isUploading && "opacity-50")}>
       {file.type.startsWith("image") ? (
         <Image
           src={src}

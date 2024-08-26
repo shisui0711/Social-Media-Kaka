@@ -39,10 +39,10 @@ app.UseSerilogRequestLogging(options =>
 {
     // Customize the message template
     options.MessageTemplate = "Handled {RequestPath}";
-    
+
     // Emit debug-level events instead of the defaults
     options.GetLevel = (httpContext, elapsed, ex) => LogEventLevel.Information;
-    
+
     // Attach additional properties to the request completion event
     options.EnrichDiagnosticContext = (diagnosticContext, httpContext) =>
     {
@@ -66,8 +66,6 @@ app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseAuthentication();
 app.UseAuthorization();
-
-app.MapFallbackToFile("index.html");
 
 app.MapHub<ProjectHub>("/project-hub");
 

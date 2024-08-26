@@ -18,7 +18,9 @@ namespace Application.Notifications.Queries.GetTotalUnseenMyNotification
 
         public Task<int> Handle(GetTotalUnseenMyNotificationQuery request, CancellationToken cancellationToken)
         {
-            return _context.Notifications.CountAsync(x=>x.RecipientId == _currentUser.Id && x.Seen == false);
+            return _context.Notifications.AsNoTracking()
+            .AsSplitQuery()
+            .CountAsync(x=>x.RecipientId == _currentUser.Id && x.Seen == false);
         }
     }
 }

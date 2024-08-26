@@ -26,7 +26,9 @@ namespace Application.Conversations.Queries.GetMyConversationInfo
 
         public async Task<ConversationDto> Handle(GetMyConversationInfoQuery request, CancellationToken cancellationToken)
         {
-            var conversation = await _context.Conversations.Where(x => x.Id == request.ConversationId)
+            var conversation = await _context.Conversations.AsNoTracking()
+            .Where(x => x.Id == request.ConversationId)
+            .AsSplitQuery()
             .ProjectTo<ConversationDto>(_mapper.ConfigurationProvider)
             .FirstOrDefaultAsync();
             Guard.Against.NotFound(request.ConversationId, conversation);

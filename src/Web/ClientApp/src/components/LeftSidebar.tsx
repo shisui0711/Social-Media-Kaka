@@ -2,10 +2,10 @@
 
 import React from "react";
 import Link from "next/link";
-import { Bell, Bookmark, Home, MessageCircle, User } from "lucide-react";
+import { Bookmark, Home, MessageCircle, User, UsersRound } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { useAuthorization } from "@/providers/AuthorizationProvider";
+import UserAvatar from "./UserAvatar";
 
 const LeftSidebar = ({ className }: { className?: string }) => {
   const { user } = useAuthorization();
@@ -21,12 +21,7 @@ const LeftSidebar = ({ className }: { className?: string }) => {
         href={`/profile/${user.userName}`}
         className="flex items-center gap-3 rounded-2xl p-3 hover:bg-background"
       >
-        <Avatar>
-          <AvatarImage src={user.avatarUrl} className="" />
-          <AvatarFallback>
-            <User />
-          </AvatarFallback>
-        </Avatar>
+        <UserAvatar avatarUrl={user.avatarUrl} />
         <span>{user.displayName}</span>
       </Link>
       <Link
@@ -49,6 +44,13 @@ const LeftSidebar = ({ className }: { className?: string }) => {
       >
         <Bookmark />
         <span>Đã lưu</span>
+      </Link>
+      <Link
+        href="/friends"
+        className="flex items-center gap-3 rounded-2xl p-3 hover:bg-background"
+      >
+        <UsersRound />
+        <span>Bạn bè</span>
       </Link>
     </div>
   );

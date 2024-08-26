@@ -4,10 +4,8 @@ import React, { useEffect, useState } from "react";
 import MessageContainer from "../../../../components/messages/MessageContainer";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useSignalR } from "@/providers/SignalRProvider";
-import { useRouter } from "next/navigation";
 import { useApiClient } from "@/app/hooks/useApiClient";
-import { ConversationDto } from "@/app/web-api-client";
-import { AxiosError } from "axios";
+import { useQuery } from "@tanstack/react-query";
 
 type Props = {
   params: {
@@ -17,10 +15,7 @@ type Props = {
 
 const MessagePage = ({ params: { conversationId } }: Props) => {
   const client = useApiClient();
-  const [conversation, setConversation] = useState<ConversationDto>()
-  const [error, setError] = useState('')
   const { joinGroup, leaveGroup } = useSignalR()
-  const router = useRouter()
 
   useEffect(()=>{
     joinGroup(conversationId)
@@ -29,17 +24,18 @@ const MessagePage = ({ params: { conversationId } }: Props) => {
     }
   },[conversationId, joinGroup, leaveGroup])
 
-  useEffect(()=>{
-    client.getMyConversationInfo(conversationId)
-    .then(data=>setConversation(data))
-    .catch(error=>{
-      if(error instanceof AxiosError && error.status === 404) router.push('/messages')
-      setError(error)
-    })
-  },[client, conversationId, router])
+  const {
+    data,
+    isError,
+    isPending
+  } = useQuery({
+    queryKey: ['conversation', conversationId],
+    queryFn: ()=>client.getMyConversationInfo(conversationId),
+    refetchOnWindowFocus: false,
+  })
 
-  if(error) return <div className="flex-center text-red-500">Có lỗi xảy ra. Vui lòng tải lại trang.</div>
-  if(!conversation) return <main className="w-full min-w-0 space-y-5 bg-card rounded-2xl h-[87vh]">
+  if(isError) return <div className="flex-center text-red-500">Có lỗi xảy ra. Vui lòng tải lại trang.</div>;
+  if(isPending) return <main className="w-full min-w-0 space-y-5 bg-card rounded-2xl h-[87vh]">
           <section className="relative h-full overflow-y-auto flex flex-col justify-between">
       <div className="sticky rounded-t-2xl top-0 w-full h-16 bg-card shadow-md flex items-center justify-between px-4">
       <div className="flex items-center space-x-4">
@@ -58,7 +54,7 @@ const MessagePage = ({ params: { conversationId } }: Props) => {
 
   return (
     <main className="w-full min-w-0 space-y-5 bg-card rounded-2xl h-[87vh]">
-      <MessageContainer conversation={conversation} />
+      <MessageContainer conversation={data} />
     </main>
   );
 };

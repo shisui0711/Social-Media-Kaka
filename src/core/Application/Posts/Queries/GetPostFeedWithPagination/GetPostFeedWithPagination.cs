@@ -26,7 +26,7 @@ namespace Application.Posts.Queries.GetPostFeedWithPagination
 
         public async Task<PaginatedList<PostDto>> Handle(GetPostFeedWithPaginationQuery request, CancellationToken cancellationToken)
         {
-            return await _context.Posts.ProjectTo<PostDto>(_mapper.ConfigurationProvider)
+            return await _context.Posts.AsSplitQuery().ProjectTo<PostDto>(_mapper.ConfigurationProvider)
                 .OrderByDescending(x => x.Created)
                 .PaginatedListAsync(request.PageNumber, request.PageSize);
         }
