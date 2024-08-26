@@ -1,9 +1,10 @@
 "use client";
 
 import React, { ClipboardEvent, useRef } from "react";
-import { EditorContent, useEditor } from "@tiptap/react";
+import { Editor, EditorContent, ReactRenderer, useEditor } from "@tiptap/react";
 import StarterKid from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
+import Mention from '@tiptap/extension-mention'
 import { useAuthorization } from "@/providers/AuthorizationProvider";
 import UserAvatar from "@/components/UserAvatar";
 import {
@@ -28,11 +29,16 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import EmojiPicker from "emoji-picker-react";
+import { useApiClient } from "@/app/hooks/useApiClient";
+import tippy from "tippy.js";
+import MentionList from "./MentionList";
 
 const PostEditor = () => {
   const { user } = useAuthorization();
 
   const mutation = useSubmitPostMutation();
+
+  const client = useApiClient();
 
   const {
     startUpload,
@@ -61,6 +67,63 @@ const PostEditor = () => {
       Placeholder.configure({
         placeholder: `${user.displayName} ơi, Hãy viết suy nghĩ của bạn ?`,
       }),
+      Mention.configure({
+        HTMLAttributes: {
+          class: ""
+        },
+        renderText({options,node}){
+          return `${options.suggestion.char}${node.attrs.label ?? node.attrs.id}`
+        },
+        suggestion: {
+          items: ({query}:{ query: string }) => {
+            return client.getMyFriendByName(query);
+          },
+          render: () => {
+            let component :any;
+            let popup :any;
+            return {
+              onStart: (props:any) => {
+                component = new ReactRenderer(MentionList, {
+                  props,
+                  editor: props.editor,
+                });
+                if (!props.clientRect) {
+                  return;
+                }
+                popup = tippy("body", {
+                  getReferenceClientRect: props.clientRect,
+                  appendTo: () => document.body,
+                  content: component.element,
+                  showOnCreate: true,
+                  interactive: true,
+                  trigger: "manual",
+                  placement: "bottom-start",
+                });
+              },
+              onUpdate(props:any) {
+                component.updateProps(props);
+                if (!props.clientRect) {
+                  return;
+                }
+                popup[0].setProps({
+                  getReferenceClientRect: props.clientRect,
+                });
+              },
+              onKeyDown(props:any) {
+                if (props.event.key === "Escape") {
+                  popup[0].hide();
+                  return true;
+                }
+                return component.ref?.onKeyDown(props);
+              },
+              onExit() {
+                popup[0].destroy();
+                component.destroy();
+              },
+            };
+          },
+        }
+      })
     ],
   });
 
@@ -68,7 +131,6 @@ const PostEditor = () => {
     editor?.getText({
       blockSeparator: "\n",
     }) || "";
-
   const handleEmojiClick = (emoji: string) => {
     editor?.chain().focus().insertContent(emoji).run();
   }

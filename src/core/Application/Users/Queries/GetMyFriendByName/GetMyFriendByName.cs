@@ -41,7 +41,7 @@ namespace Application.Users.Queries.GetMyFriendByName
                     .Where(o => o.SenderId == _currentUser.Id && o.ReceiverId == x.Id && o.Accepted)
                     .Select(x=> new { x.SenderId,x.ReceiverId})
                     .ToList().Count > 0
-                )
+                ).Take(5)
                 .ToListAsync();
         }
     }

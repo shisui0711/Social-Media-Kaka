@@ -139,3 +139,19 @@
 .tiptap.ProseMirror{
   outline: none;
 }
+
+.tiptap {
+  :first-child {
+    margin-top: 0;
+  }
+
+  [data-type="mention"] {
+    @apply text-foreground bg-blue-300 dark:bg-blue-600 rounded-2xl p-2 box-decoration-clone;
+  }
+}
+
+p {
+  [data-type="mention"] {
+    @apply text-foreground bg-blue-300 dark:bg-blue-600 rounded-2xl p-2 box-decoration-clone;
+  }
+}
