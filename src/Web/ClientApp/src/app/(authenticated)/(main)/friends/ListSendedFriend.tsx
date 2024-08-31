@@ -3,7 +3,7 @@
 import { useApiClient } from '@/app/hooks/useApiClient'
 import { useInfiniteQuery } from '@tanstack/react-query';
 import React, { useEffect, useState } from 'react'
-import { PaginatedListOfUserDto, UserDto } from '../../web-api-client';
+import { PaginatedListOfUserDto, UserDto } from '../../../web-api-client';
 import InfiniteScrollContainer from '@/components/InfiniteScrollContainer';
 import FriendComponent from './FriendComponent';
 import { Loader } from 'lucide-react';

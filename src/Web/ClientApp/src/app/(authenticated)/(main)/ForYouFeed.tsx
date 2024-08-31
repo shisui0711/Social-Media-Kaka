@@ -5,8 +5,8 @@ import PostsLoadingSkeleton from "@/components/posts/PostsLoadingSkeleton";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { Loader } from "lucide-react";
 import PostComponent from "@/components/posts/Post";
-import { useApiClient } from "../hooks/useApiClient";
-import { PaginatedListOfPostDto } from "../web-api-client";
+import { useApiClient } from "../../hooks/useApiClient";
+import { PaginatedListOfPostDto } from "../../web-api-client";
 
 export default function ForYouFeed() {
   const client = useApiClient()

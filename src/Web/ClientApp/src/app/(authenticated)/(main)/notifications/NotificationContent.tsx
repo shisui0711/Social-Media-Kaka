@@ -22,7 +22,7 @@ const NotificationContent = ({ setOpen }: Props) => {
         <div className="flex items-center gap-2">
           <Link
             href="/notifications"
-            className="text-blue-500 hover:underline"
+            className="text-blue-500 text-sm hover:underline"
             hidden={pathname === "/notifications"}
             onClick={() => {
               if (setOpen) setOpen(false);

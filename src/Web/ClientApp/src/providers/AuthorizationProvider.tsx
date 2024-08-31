@@ -1,6 +1,5 @@
 "use client"
 import { MyUserDto } from "@/app/web-api-client";
-import { User } from "@/types";
 import React, { createContext, useContext, useState } from "react";
 
 interface IAuthorizationContext {

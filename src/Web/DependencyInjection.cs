@@ -65,7 +65,12 @@ namespace WebApi
             services.AddCors(options =>
                 options.AddPolicy("CorsPolicy", builder =>
                 {
-                    builder.WithOrigins("http://localhost:3000")
+                    builder.WithOrigins(
+                    "http://localhost:3000",
+                    "https://localhost:3000",
+                    "http://192.168.1.22:3000",
+                    "https://192.168.1.22:3000"
+                    )
                             .AllowAnyHeader()
                             .AllowAnyMethod()
                             .AllowCredentials();

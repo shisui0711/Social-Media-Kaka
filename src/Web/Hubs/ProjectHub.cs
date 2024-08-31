@@ -7,13 +7,11 @@ using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 
 namespace WebApi.Hubs
 {
     public class ProjectHub : Hub
     {
-        private static RoomManager roomManager = new RoomManager();
         private readonly IApplicationDbContext _context;
         private readonly IMapper _mapper;
 
@@ -23,38 +21,28 @@ namespace WebApi.Hubs
             _context = context;
         }
 
-        private static readonly ConcurrentDictionary<string, string> ConnectionIdToUserIdMap = new ConcurrentDictionary<string, string>();
-        private static readonly ConcurrentDictionary<string, string> UserIdToConnectionIdMap = new ConcurrentDictionary<string, string>();
+        private static readonly ConcurrentDictionary<string, string> UserIdToConnectionIdMap = new();
         public void RegisterUserId(string userId)
         {
             // Cập nhật mối quan hệ giữa connectionId và userId
-            ConnectionIdToUserIdMap[Context.ConnectionId] = userId;
             UserIdToConnectionIdMap[userId] = Context.ConnectionId;
         }
         public override Task OnConnectedAsync()
         {
-            var userId = Context.User?.Claims
-                .FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier)?.Value;
-            if (userId != null)
+            if (Context.UserIdentifier != null)
             {
-                Clients.All.SendAsync("UserStatusChanged", userId, true);
+                Clients.All.SendAsync("UserStatusChanged", Context.UserIdentifier, true);
             }
             return base.OnConnectedAsync();
         }
 
         public override Task OnDisconnectedAsync(Exception? exception)
         {
-            ConnectionIdToUserIdMap.TryRemove(Context.ConnectionId, out _);
-            var userId = Context.User?.Claims
-                .FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier)?.Value;
-
-            if (userId != null)
+            if (Context.UserIdentifier != null)
             {
-                UserIdToConnectionIdMap.TryRemove(userId, out _);
-                Clients.All.SendAsync("UserStatusChanged", userId, false);
+                UserIdToConnectionIdMap.TryRemove(Context.UserIdentifier, out _);
+                Clients.All.SendAsync("UserStatusChanged", Context.UserIdentifier, false);
             }
-            roomManager.DeleteRoom(Context.ConnectionId);
-            _ = NotifyRoomInfoAsync(false);
             return base.OnDisconnectedAsync(exception);
         }
 
@@ -65,23 +53,19 @@ namespace WebApi.Hubs
 
         public async Task SendFriendRequest(string userId)
         {
-            var currentUserId = Context.User?.Claims
-                .FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier)?.Value;
-            if (currentUserId != null && UserIdToConnectionIdMap.TryGetValue(userId, out var connectionId))
+            if (Context.UserIdentifier != null)
             {
-                UserDto user = await _context.Users.AsNoTracking().Where(x => x.Id == currentUserId)
+                UserDto user = await _context.Users.AsNoTracking().Where(x => x.Id == Context.UserIdentifier)
                 .ProjectTo<UserDto>(_mapper.ConfigurationProvider).FirstAsync();
-                await Clients.Client(connectionId).SendAsync("ReceiveFriendRequest", user);
+                await Clients.User(userId).SendAsync("ReceiveFriendRequest", user);
             }
         }
 
         public async Task SendCancelFriend(string userId)
         {
-            var currentUserId = Context.User?.Claims
-                .FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier)?.Value;
-            if (currentUserId != null && UserIdToConnectionIdMap.TryGetValue(userId, out var connectionId))
+            if (Context.UserIdentifier != null)
             {
-                await Clients.Client(connectionId).SendAsync("ReceiveCancelFriend", currentUserId);
+                await Clients.User(userId).SendAsync("ReceiveCancelFriend", Context.UserIdentifier);
             }
         }
         public async Task SendMessage(MessageDto message)
@@ -96,164 +80,63 @@ namespace WebApi.Hubs
 
         public async Task JoinGroup(string conversationId)
         {
-            var userId = Context.User?.Claims
-                .FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier)?.Value;
-            if (userId != null && UserIdToConnectionIdMap.TryGetValue(userId, out var connectionId))
+            if (Context.UserIdentifier != null)
             {
-                await Groups.AddToGroupAsync(connectionId, conversationId);
+                await Groups.AddToGroupAsync(Context.UserIdentifier, conversationId);
             }
         }
 
         public async Task LeaveGroup(string conversationId)
         {
-            var userId = Context.User?.Claims
-                .FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier)?.Value;
-            if (userId != null && UserIdToConnectionIdMap.TryGetValue(userId, out var connectionId))
+            if (Context.UserIdentifier != null)
             {
-                await Groups.RemoveFromGroupAsync(connectionId, conversationId);
+                await Groups.RemoveFromGroupAsync(Context.UserIdentifier, conversationId);
             }
         }
 
         public async Task SendNotification(string receiverId, string message)
         {
-            var userId = Context.User?.Claims
-                .FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier)?.Value;
-            if (UserIdToConnectionIdMap.TryGetValue(receiverId, out var connectionId))
-            {
-                await Clients.Client(connectionId).SendAsync("ReceiveNotification", userId, message);
+            if(Context.UserIdentifier != null){
+                await Clients.User(receiverId).SendAsync("ReceiveNotification", Context.UserIdentifier, message);
             }
         }
 
-        //Method for WebRTC
-        public async Task CreateRoom(string name)
-        {
-            RoomInfo? roomInfo = roomManager.CreateRoom(Context.ConnectionId, name);
-            if (roomInfo != null)
-            {
-                await Groups.AddToGroupAsync(Context.ConnectionId, roomInfo.RoomId);
-                await Clients.Caller.SendAsync("roomCreated", roomInfo.RoomId);
-                await NotifyRoomInfoAsync(false);
-            }
-            else
-            {
-                await Clients.Caller.SendAsync("roomError", "error occurred when creating a new room.");
-            }
-        }
-        public async Task JoinRoom(string roomId)
-        {
-            await Groups.AddToGroupAsync(Context.ConnectionId, roomId);
-            await Clients.Caller.SendAsync("roomJoined", roomId);
-            await Clients.Group(roomId).SendAsync("roomReady");
+        //WebRTC
 
-            //remove the room from room list.
-            if (int.TryParse(roomId, out int id))
-            {
-                roomManager.DeleteRoom(id);
-                await NotifyRoomInfoAsync(false);
-            }
-        }
-        public async Task LeaveRoom(string roomId)
+        public async Task AwakenUser(string receiverId,string callerName,string callerAvatar)
         {
-            await Clients.Group(roomId).SendAsync("roomLeave");
-        }
-        public async Task GetRoomInfo()
-        {
-            await NotifyRoomInfoAsync(true);
-        }
-        public async Task SendSignaling(string roomId, object signaling)
-        {
-            await Clients.OthersInGroup(roomId).SendAsync("ReceiveSignaling", signaling);
-        }
-        public async Task NotifyRoomInfoAsync(bool notifyOnlyCaller)
-        {
-            List<RoomInfo> roomInfos = roomManager.GetAllRoomInfo();
-            var list = from room in roomInfos
-                    select new
-                    {
-                        RoomId = room.RoomId,
-                        Name = room.Name,
-                        Button = "<button class=\"joinButton\">Join!</button>"
-                    };
-            var data = JsonConvert.SerializeObject(list);
-
-            if (notifyOnlyCaller)
-            {
-                await Clients.Caller.SendAsync("updateRoom", data);
-            }
-            else
-            {
-                await Clients.All.SendAsync("updateRoom", data);
-            }
-        }
-    }
-
-    public class RoomManager
-    {
-        private int nextRoomId;
-        private ConcurrentDictionary<int, RoomInfo> rooms;
-
-        public RoomManager()
-        {
-            nextRoomId = 1;
-            rooms = new ConcurrentDictionary<int, RoomInfo>();
+            await Clients.User(receiverId).SendAsync("ReceiveAwaken",Context.UserIdentifier, callerName, callerAvatar);
         }
 
-        public RoomInfo? CreateRoom(string connectionId, string name)
+        public async Task ReadyToCall(string callerId, string receiverName, string receiverAvatar,bool hasVideo)
         {
-            rooms.TryRemove(nextRoomId, out _);
-
-            //create new room info
-            var roomInfo = new RoomInfo
-            {
-                RoomId = nextRoomId.ToString(),
-                Name = name,
-                HostConnectionId = connectionId
-            };
-            bool result = rooms.TryAdd(nextRoomId, roomInfo);
-
-            if (result)
-            {
-                nextRoomId++;
-                return roomInfo;
-            }
-            else
-            {
-                return null;
-            }
+            await Clients.User(callerId).SendAsync("ReceiveReadyCall", Context.UserIdentifier,receiverName,receiverAvatar,hasVideo);
         }
 
-        public void DeleteRoom(int roomId)
+        public async Task StartCall(string receiverId, string callerName,string callerAvatar, bool hasVideo,object signal)
         {
-            rooms.TryRemove(roomId, out _);
+            await Clients.User(receiverId)
+            .SendAsync("ReceiveStartCall", Context.UserIdentifier, callerName, callerAvatar, hasVideo,signal);
         }
 
-        public void DeleteRoom(string connectionId)
+        public async Task AnswerCall(string callerId,object signal)
         {
-            int? correspondingRoomId = null;
-            foreach (var pair in rooms)
-            {
-                if (pair.Value.HostConnectionId.Equals(connectionId))
-                {
-                    correspondingRoomId = pair.Key;
-                }
-            }
-
-            if (correspondingRoomId.HasValue)
-            {
-                rooms.TryRemove(correspondingRoomId.Value, out _);
-            }
+            await Clients.User(callerId).SendAsync("ReceiveAnswerCall",signal);
         }
 
-        public List<RoomInfo> GetAllRoomInfo()
+        public async Task EndCall(string collaboratorId)
         {
-            return rooms.Values.ToList();
+            await Clients.User(collaboratorId).SendAsync("ReceiveEndCall");
         }
-    }
 
-    public class RoomInfo
-    {
-        public string RoomId { get; set; } = null!;
-        public string Name { get; set; } = null!;
-        public string HostConnectionId { get; set; } = null!;
+        public async Task VideoChange(string collaboratorId,bool state)
+        {
+            await Clients.User(collaboratorId).SendAsync("ReceiveVideoChange",state);
+        }
+
+        public async Task AudioChange(string collaboratorId, bool state)
+        {
+            await Clients.User(collaboratorId).SendAsync("ReceiveAudioChange",state);
+        }
     }
 }

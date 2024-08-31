@@ -5,11 +5,15 @@ import Post from "@/components/posts/Post";
 import PostsLoadingSkeleton from "@/components/posts/PostsLoadingSkeleton";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { Loader } from "lucide-react";
-import { useApiClient } from "../hooks/useApiClient";
-import { PaginatedListOfPostDto } from "../web-api-client";
+import { BASE_API_URL } from "../../../../app.config";
+import { useApiClient } from "@/app/hooks/useApiClient";
 
-export default function FollowingFeed() {
-  const client = useApiClient()
+interface UserPostsProps {
+  userName: string,
+}
+
+export default function TaggedPosts({userName}: UserPostsProps) {
+  const client = useApiClient();
   const {
     data,
     fetchNextPage,
@@ -18,8 +22,8 @@ export default function FollowingFeed() {
     isFetchingNextPage,
     status,
   } = useInfiniteQuery({
-    queryKey: ["post-feed", "following"],
-    queryFn: async ({pageParam}):Promise<PaginatedListOfPostDto> => client.getFollowingPostWithPagination(pageParam,10),
+    queryKey: ["post-feed", "tagged-posts",userName],
+    queryFn: ({ pageParam }) => client.getUserTaggedPostWithPagination(userName, pageParam,10),
     initialPageParam: 1,
     getNextPageParam: (lastPage) => {
       return lastPage.hasNextPage
@@ -37,7 +41,7 @@ export default function FollowingFeed() {
     return (
       <div className="flex-center h-[60vh]">
         <p className="text-center text-muted-foreground">
-          Chưa có bài viết nào. Hãy follow ai đó để xem bài viết của họ !
+          Nguời này không được gắn thẻ ở bất kỳ bài viết nào.
         </p>
       </div>
     );
@@ -45,9 +49,11 @@ export default function FollowingFeed() {
 
   if (status === "error") {
     return (
-      <p className="text-center text-destructive">
-        An error occurred while loading posts.
-      </p>
+      <div className="flex-center h-[60vh]">
+        <p className="text-center text-destructive w-full">
+          Có lỗi xảy ra khi tải bài viết. Hãy tải lại trang.
+        </p>
+      </div>
     );
   }
 

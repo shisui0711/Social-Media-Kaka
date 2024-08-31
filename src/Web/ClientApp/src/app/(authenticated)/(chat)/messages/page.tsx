@@ -1,5 +1,3 @@
-import ListConversation from '@/components/messages/ListConversation'
-import MessageContainer from '@/components/messages/MessageContainer'
 import React from 'react'
 
 const EmptyMessagePage = () => {

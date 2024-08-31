@@ -7,7 +7,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { usePathname } from "next/navigation";
-import NotificationContent from "@/app/(main)/notifications/NotificationContent";
+import NotificationContent from "@/app/(authenticated)/(main)/notifications/NotificationContent";
 import { useSignalR } from "@/providers/SignalRProvider";
 import { useApiClient } from "@/app/hooks/useApiClient";
 import { useQuery } from "@tanstack/react-query";

@@ -14,7 +14,7 @@ const NotificationMoreButton = () => {
 
   return (
     <DropdownMenu>
-  <DropdownMenuTrigger><Ellipsis/></DropdownMenuTrigger>
+  <DropdownMenuTrigger className='hover:bg-blue-300 p-2 rounded-2xl'><Ellipsis/></DropdownMenuTrigger>
   <DropdownMenuContent>
     <DropdownMenuItem onClick={()=>{
       markAsReadNotifications()

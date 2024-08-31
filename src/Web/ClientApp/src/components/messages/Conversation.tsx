@@ -77,7 +77,7 @@ const ConversationComponent = ({ conversation, selected }: Props) => {
           </>
         )}
       </div>
-      <ConversationMoreButton conversation={conversation}  className={`z-10 absolute right-2 top-[50%] translate-y-[-50%] bg-card p-1 rounded-full hidden group-hover/conversation:block`} />
+      <ConversationMoreButton conversation={conversation}  className={`z-10 absolute right-2 top-[50%] translate-y-[-50%] bg-card p-1 rounded-full hidden md:group-hover/conversation:block`} />
     </section>
   );
 };

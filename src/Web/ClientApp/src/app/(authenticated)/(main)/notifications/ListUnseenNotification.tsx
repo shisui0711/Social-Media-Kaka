@@ -2,13 +2,10 @@
 
 import InfiniteScrollContainer from "@/components/InfiniteScrollContainer";
 import PostsLoadingSkeleton from "@/components/posts/PostsLoadingSkeleton";
-import kyInstance from "@/lib/ky";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import React, { Dispatch, SetStateAction } from "react";
 import Notification from "./Notification";
-import { BASE_API_URL } from "../../app.config";
-import { useAuthorization } from "../../../providers/AuthorizationProvider";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { useApiClient } from "@/app/hooks/useApiClient";
@@ -65,8 +62,8 @@ const ListUnseenNotification = ({setOpen}: Props) => {
 
   if (pathname !== "/notifications") {
     return (
-      <div className="space-y-3 max-h-[70vh] overflow-y-auto">
-        <div className="space-y-3" onClick={()=>{
+      <div className="max-h-[70vh] overflow-y-auto">
+        <div className="space-y-3 px-2" onClick={()=>{
           if(setOpen) setOpen(false);
         }}>
           {notifications.map((notification) => (

@@ -55,7 +55,7 @@ export default function Notification({ notification }: NotificationProps) {
     <Link href={href} className="block" onClick={()=>markAsReadNotification(notification.id)}>
       <article
         className={cn(
-          "flex gap-3 items-center rounded-2xl bg-card p-5 shadow-sm transition-colors hover:bg-card/70",
+          "flex gap-3 items-center rounded-2xl bg-card p-3 shadow-sm transition-colors hover:bg-card/70",
           !notification.seen && "bg-primary/10",
         )}
       >
@@ -65,11 +65,13 @@ export default function Notification({ notification }: NotificationProps) {
             <div className="flex gap-2 items-center">
             <UserAvatar avatarUrl={notification.issuer?.avatarUrl} size={36} />
               <div className="flex flex-col">
-              <span className="font-bold">{notification.issuer?.displayName}</span>{" "}
-              <span>{message}</span>
+                <div className="flex items-center justify-between">
+                  <span className="font-bold">{notification.issuer?.displayName}</span>
+                  <span className="text-sm text-muted-foreground">{calculateTimeDifference(notification.created)}</span>
+                </div>
+              <span className="text-sm">{message}</span>
               </div>
             </div>
-            <span>{calculateTimeDifference(notification.created)}</span>
           </div>
           { pathname === '/notifications' && notification.post && (
             <div className="line-clamp-3 whitespace-pre-line text-muted-foreground">

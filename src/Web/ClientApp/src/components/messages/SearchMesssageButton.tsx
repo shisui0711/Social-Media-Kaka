@@ -17,6 +17,7 @@ import UserResultButton from "./UserResultButton";
 import { UserDto } from "@/app/web-api-client";
 import { useApiClient } from "@/app/hooks/useApiClient";
 import { useQuery } from "@tanstack/react-query";
+import { AxiosError } from "axios";
 
 const SearchMesssageButton = () => {
   const [search, setSearch] = useState("");
@@ -32,7 +33,12 @@ const SearchMesssageButton = () => {
     queryKey: ["search-friend", debouncedValue],
     queryFn: () => client.getMyFriendByName(debouncedValue),
     enabled: !!debouncedValue,
-    retry: true,
+    retry(failureCount, error) {
+      if (error instanceof AxiosError && error.status === 404) {
+        return false;
+      }
+      return failureCount < 3;
+    },
     refetchOnWindowFocus: false,
     staleTime: 1000 * 60 * 60, // 1 hours
   })

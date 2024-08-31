@@ -16,13 +16,13 @@ export async function SignIn(
     const data = await client.signIn(credentials)
     cookies().set("token",data.token!, {
       httpOnly: true,
-      secure: true,
+      secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
       path: "/",
     })
     cookies().set("_kaka_refreshToken",data.refreshToken!, {
       httpOnly: true,
-      secure: true,
+      secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
       maxAge: 60 * 60 * 24 * 30, // 30 days
     })

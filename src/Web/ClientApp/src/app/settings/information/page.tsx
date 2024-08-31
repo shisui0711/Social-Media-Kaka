@@ -1,6 +1,6 @@
 'use client'
 
-import { AvatarInput } from '@/app/(main)/profile/[username]/EditProfileDialog';
+import { AvatarInput } from '@/app/(authenticated)/(main)/profile/[username]/EditProfileDialog';
 import { updateUserInformationSchema, UpdateUserInformationValues } from '@/lib/validation';
 import { useAuthorization } from '@/providers/AuthorizationProvider';
 import { zodResolver } from '@hookform/resolvers/zod';
