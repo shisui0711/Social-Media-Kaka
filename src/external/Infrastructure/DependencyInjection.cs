@@ -24,7 +24,15 @@ namespace Infrastructure
             Guard.Against.Null(connectionString, message: "Connection string 'DefaultConnection' not found.");
 
             services.Configure<JwtConfiguration>(configuration.GetSection("Jwt"));
+            services.Configure<GoogleAuthConfiguration>(configuration.GetSection("Authentication:Google"));
+            services.Configure<FacebookAuthConfiguration>(configuration.GetSection("Authentication:Facebook"));
             services.Configure<ClientAppConfiguarion>(configuration.GetSection("ClientApp"));
+
+            services.AddHttpClient("Facebook", config => {
+                var baseUrl = configuration.GetValue<string>("Authentication:Facebook:BaseUrl");
+                Guard.Against.NullOrEmpty(baseUrl, message: "Facebook base url is not configured");
+                config.BaseAddress = new Uri(baseUrl);
+            });
 
             services.AddScoped<ISaveChangesInterceptor, AuditableEntityInterceptor>();
 
@@ -41,6 +49,8 @@ namespace Infrastructure
             services.AddSingleton(TimeProvider.System);
             services.AddTransient<IIdentityService, IdentityService>();
             services.AddScoped<IJwtService, JwtService>();
+            services.AddScoped<IGoogleAuthService, GoogleAuthService>();
+            services.AddScoped<IFacebookAuthService, FacebookAuthService>();
 
 
             return services;

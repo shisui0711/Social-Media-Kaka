@@ -3,7 +3,7 @@
 import { SignInValues } from "@/lib/validation";
 import { isRedirectError } from "next/dist/client/components/redirect";
 import { BASE_API_URL } from "../../app.config";
-import { Client, SignInCommand, SwaggerException } from "@/app/web-api-client";
+import { Client, SwaggerException } from "@/app/web-api-client";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import axios, { isAxiosError } from "axios";
@@ -39,18 +39,4 @@ export async function SignIn(
   }
 }
 
-export const SendVerifyEmail = async (username: string) => {
-  try {
-    const response = await fetch(`${BASE_API_URL}/auth/email/resend?email=${username}`)
-    if(response.status === 404){
-      return { error: "Email không tồn tại" }
-    }
-    else if(response.status === 400){
-      return { error: "Email không hợp lệ" }
-    }
-    return { error: undefined}
-  } catch (error) {
-    return { error: "Có lỗi xảy ra. Vui lòng thử lại"}
-  }
-}
 

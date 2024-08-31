@@ -1,11 +1,13 @@
 
 import { cookies } from "next/headers"
 import { BASE_API_URL } from "./app/app.config"
-import { Google } from "arctic";
+import { Google as ArticGoogle } from "arctic";
 import { cache } from "react";
 import { Client, MyUserDto, } from "./app/web-api-client";
 import axios from "axios";
 import { parseStringify } from "./lib/utils";
+import NextAuth from "next-auth"
+import Google from "next-auth/providers/google"
 
 export const validateRequest = cache(
   async(): Promise<
@@ -26,8 +28,18 @@ export const validateRequest = cache(
   }
 )
 
-export const google = new Google(
+export const google = new ArticGoogle(
   process.env.GOOGLE_CLIENT_ID!,
   process.env.GOOGLE_CLIENT_SECRET!,
   `${process.env.NEXT_PUBLIC_BASE_URL}/api/auth/google/callback`
 )
+
+export const { handlers, signIn, signOut, auth } = NextAuth({
+  providers: [
+    Google({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    }),
+    
+  ],
+})

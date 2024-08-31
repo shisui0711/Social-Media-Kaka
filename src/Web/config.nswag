@@ -6,7 +6,7 @@
       "project": "WebApi.csproj",
       "documentName": "v1",
       "msBuildProjectExtensionsPath": null,
-      "configuration": "Release",
+      "configuration": "Debug",
       "runtime": null,
       "targetFramework": null,
       "noBuild": true,

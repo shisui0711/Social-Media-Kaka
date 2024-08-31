@@ -1,9 +1,8 @@
 import { Button } from "@/components/ui/button";
 import React from "react";
-import { BASE_API_URL } from "../../app.config";
 
-const GoogleSignInButton = () => {
-  return <Button variant='outline' className="bg-white" asChild>
+const GoogleSignInButton = ({disabled}:{disabled?:boolean}) => {
+  return <Button disabled={disabled} variant='outline' className="bg-white" asChild>
 
     <a href={`/sign-in/google`} className="flex items-center gap-3 w-full text-muted-foreground">
     <GoogleIcon className="size-6"/>
@@ -11,6 +10,7 @@ const GoogleSignInButton = () => {
     </a>
   </Button>;
 };
+
 
 export default GoogleSignInButton;
 

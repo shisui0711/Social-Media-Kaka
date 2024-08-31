@@ -14,7 +14,7 @@ builder.WebHost.UseUrls("https://0.0.0.0:8000");
 builder.Services.AddSerilog((services, lc) => lc
     .ReadFrom.Configuration(builder.Configuration)
     .MinimumLevel.Information()
-    // .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+    .MinimumLevel.Override("Microsoft.EntityFrameworkCore.*", LogEventLevel.Warning)
     .ReadFrom.Services(services)
     .Enrich.FromLogContext()
     .WriteTo.Console());

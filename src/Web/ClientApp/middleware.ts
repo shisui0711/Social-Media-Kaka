@@ -1,17 +1,4 @@
-import { validateRequest } from '@/auth';
-import { redirect } from 'next/navigation';
-import type { NextRequest } from 'next/server'
-
-// This function can be marked `async` if using `await` inside
-export async function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl
-  const publicRoutes = ['/sign-in', '/sign-up', '/'];
-  const isPublicRoute = publicRoutes.some(route => pathname.startsWith(route))
-  if(!isPublicRoute){
-    const { user } = await validateRequest()
-    if(!user) redirect("/sign-in")
-  }
-}
+export { auth as middleware } from "@/auth"
 
 // See "Matching Paths" below to learn more
 export const config = {
