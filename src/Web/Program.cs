@@ -9,7 +9,7 @@ using WebApi.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 #if DEBUG
-builder.WebHost.UseUrls("https://0.0.0.0:8000");
+// builder.WebHost.UseUrls("https://0.0.0.0:8000");
 #endif
 builder.Services.AddSerilog((services, lc) => lc
     .ReadFrom.Configuration(builder.Configuration)

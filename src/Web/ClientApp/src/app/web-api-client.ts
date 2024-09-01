@@ -124,6 +124,106 @@ export class Client {
         return Promise.resolve<void>(null as any);
     }
 
+    forgottenPassword(command: ForgottenPasswordCommand, cancelToken?: CancelToken): Promise<void> {
+        let url_ = this.baseUrl + "/api/auth/forgotten-password";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json",
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processForgottenPassword(_response);
+        });
+    }
+
+    protected processForgottenPassword(response: AxiosResponse): Promise<void> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            return Promise.resolve<void>(null as any);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
+    recoveryPassword(command: RecoveryPasswordCommand, cancelToken?: CancelToken): Promise<boolean> {
+        let url_ = this.baseUrl + "/api/auth/recovery-password";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processRecoveryPassword(_response);
+        });
+    }
+
+    protected processRecoveryPassword(response: AxiosResponse): Promise<boolean> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = JSON.parse(resultData200);
+            return Promise.resolve<boolean>(result200);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<boolean>(null as any);
+    }
+
     googleSignIn(command: GoogleSignInCommand, cancelToken?: CancelToken): Promise<TokenResponse> {
         let url_ = this.baseUrl + "/api/auth/google-sign-in";
         url_ = url_.replace(/[?&]$/, "");
@@ -205,6 +305,58 @@ export class Client {
     }
 
     protected processFacebookSignIn(response: AxiosResponse): Promise<TokenResponse> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = JSON.parse(resultData200);
+            return Promise.resolve<TokenResponse>(result200);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<TokenResponse>(null as any);
+    }
+
+    githubSignIn(command: GithubSignInCommand, cancelToken?: CancelToken): Promise<TokenResponse> {
+        let url_ = this.baseUrl + "/api/auth/github-sign-in";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processGithubSignIn(_response);
+        });
+    }
+
+    protected processGithubSignIn(response: AxiosResponse): Promise<TokenResponse> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -2939,11 +3091,25 @@ export interface SignUpCommand {
     password: string;
 }
 
+export interface ForgottenPasswordCommand {
+    email: string;
+}
+
+export interface RecoveryPasswordCommand {
+    email: string;
+    token: string;
+    newPassword: string;
+}
+
 export interface GoogleSignInCommand {
     idToken: string;
 }
 
 export interface FacebookSignInCommand {
+    accessToken: string;
+}
+
+export interface GithubSignInCommand {
     accessToken: string;
 }
 
@@ -3032,7 +3198,6 @@ export interface User extends IdentityUser {
     displayName: string;
     firstName: string;
     lastName: string;
-    googleId: string | undefined;
     avatarUrl: string | undefined;
     bio: string | undefined;
     usernameLastChange: string | undefined;

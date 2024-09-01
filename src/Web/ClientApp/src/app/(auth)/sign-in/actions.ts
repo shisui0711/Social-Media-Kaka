@@ -6,7 +6,7 @@ import { BASE_API_URL } from "../../app.config";
 import { Client, SwaggerException } from "@/app/web-api-client";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import axios, { isAxiosError } from "axios";
+import axios from "axios";
 
 export async function SignIn(
   credentials: SignInValues

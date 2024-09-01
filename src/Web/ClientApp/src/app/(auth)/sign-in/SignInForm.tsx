@@ -18,8 +18,10 @@ import { Loader } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/components/ui/use-toast";
 import { refreshSession } from "../actions";
-import GoogleSignInButton from "./GoogleSignInButton";
+import GoogleSignInButton from "./google/GoogleSignInButton";
 import Link from "next/link";
+import FacebookSignInButton from "./facebook/FacebookSignInButton";
+import GithubSignInButton from "./github/GithubSignInButton";
 
 const SignInForm = () => {
   const [isRefreshing, setIsRefreshing] = useState(true);
@@ -107,7 +109,15 @@ const SignInForm = () => {
         <span>hoặc</span>
         <div className="h-px flex-1 bg-muted" />
       </div>
-      <GoogleSignInButton disabled={isRefreshing} />
+      <div className="flex-center gap-3">
+        <GoogleSignInButton disabled={isRefreshing} />
+        <FacebookSignInButton disabled={isRefreshing}/>
+        <GithubSignInButton disabled={isRefreshing}/>
+        {/* <ZaloSignInButton disabled={isRefreshing}/> */}
+      </div>
+      <Link href="/forgotten" className="text-center block hover:underline hover:text-blue-500">
+          Quên mật khẩu?
+          </Link>
       <Link
         href="/sign-up"
         className="block text-center hover:underline hover:text-blue-500"

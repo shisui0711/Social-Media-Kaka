@@ -1,10 +1,11 @@
 
-import { google } from "@/auth";
+import { zalo } from "@/auth";
 import { cookies } from "next/headers";
 import { NextRequest } from "next/server";
 import { Client, SwaggerException } from "@/app/web-api-client";
 import { BASE_API_URL } from "@/app/app.config";
 import axios from "axios";
+import { OAuth2RequestError } from "arctic";
 
 export async function GET(req: NextRequest){
   const code = req.nextUrl.searchParams.get('code')
@@ -20,10 +21,10 @@ export async function GET(req: NextRequest){
   }
 
   try {
-    const tokens = await google.validateAuthorizationCode(code,storedCodeVerifier)
+    const tokens = await zalo.validateAuthorizationCode(code);
 
     const client = new Client(BASE_API_URL,axios.create({transformResponse: (data) => data}));
-    var data = await client.googleSignIn({idToken: tokens.idToken});
+    var data = await client.githubSignIn({accessToken: tokens.access_token});
 
     cookies().set("token",data.token!, {
       httpOnly: true,
@@ -49,6 +50,9 @@ export async function GET(req: NextRequest){
     console.log(error)
     if(error instanceof SwaggerException && error.status === 401){
       return new Response(null,{status:401})
+    }
+    if(error instanceof OAuth2RequestError){
+      return new Response(null,{status:400})
     }
     return new Response(null,{status:500})
   }

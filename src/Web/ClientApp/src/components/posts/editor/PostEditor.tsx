@@ -173,8 +173,8 @@ const PostEditor = () => {
         <Dialog>
           <DialogTrigger asChild>
             <div className="bg-background py-3 px-5 w-full rounded-full flex flex-col lg:flex-row text-muted-foreground">
-              <span>{`${user.displayName} ơi, `}</span>
-              <span>Hãy viết suy nghĩ của bạn ?</span>
+              <span className="text-sm xl:text-base">{`${user.displayName} ơi, `}</span>
+              <span className="text-sm xl:text-base">Hãy viết suy nghĩ của bạn ?</span>
             </div>
           </DialogTrigger>
           <DialogContent

@@ -4,9 +4,8 @@ import React from "react";
 const GoogleSignInButton = ({disabled}:{disabled?:boolean}) => {
   return <Button disabled={disabled} variant='outline' className="bg-white" asChild>
 
-    <a href={`/sign-in/google`} className="flex items-center gap-3 w-full text-muted-foreground">
+    <a href={`/sign-in/google`} className="flex items-center gap-3 rounded-full !p-2 text-muted-foreground">
     <GoogleIcon className="size-6"/>
-    Đăng nhập với Google
     </a>
   </Button>;
 };

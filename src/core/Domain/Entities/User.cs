@@ -9,7 +9,6 @@ namespace Domain.Entities
         public string DisplayName { get; set; } = null!;
         public string FirstName { get; set; } = null!;
         public string LastName { get; set; } = null!;
-        public string? GoogleId { get; set; }
         public string? AvatarUrl { get; set; }
         public string? Bio { get; set; }
         public DateTime? UsernameLastChange { get; set; }

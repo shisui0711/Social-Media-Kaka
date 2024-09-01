@@ -2,6 +2,7 @@ import { Metadata } from 'next'
 import Link from 'next/link'
 import React from 'react'
 import SignUpForm from './SignUpForm'
+import Image from 'next/image'
 
 export const metadata: Metadata = {
   title: "Đăng ký"
@@ -13,6 +14,13 @@ const Page = () => {
       <div className='flex h-full max-h-[40rem] w-full max-w-[32rem] rounded-2xl overflow-hidden bg-card shadow-2xl'>
         <div className='w-full space-y-5 overflow-y-auto p-10'>
           <div className='space-y-1 text-center'>
+            <Image
+              src="/icons/logo.png"
+              alt='Logo'
+              width={50}
+              height={50}
+              className='mx-auto'
+            />
             <h1 className='text-2xl sm:text-3xl font-bold'>
               Đăng ký tài khoản Kaka
             </h1>

@@ -19,9 +19,9 @@ namespace Infrastructure.Identity
         private readonly ILogger<FacebookAuthService> _logger;
         private readonly UserManager<User> _userManager;
 
-        public FacebookAuthService(HttpClient httpClient, IOptions<FacebookAuthConfiguration> facebookAuthConfiguration, ILogger<FacebookAuthService> logger, UserManager<User> userManager)
+        public FacebookAuthService(IHttpClientFactory httpClientFactory, IOptions<FacebookAuthConfiguration> facebookAuthConfiguration, ILogger<FacebookAuthService> logger, UserManager<User> userManager)
         {
-            _httpClient = httpClient;
+            _httpClient = httpClientFactory.CreateClient("Facebook");
             _facebookAuthConfiguration = facebookAuthConfiguration.Value;
             _logger = logger;
             _userManager = userManager;
@@ -60,6 +60,7 @@ namespace Infrastructure.Identity
                         DisplayName = userInfo.Name,
                         Email = userInfo.Email,
                         UserName = userInfo.Email,
+                        AvatarUrl = userInfo.Picture.Data.Url.ToString(),
                         EmailConfirmed = true,
                     };
 
@@ -69,13 +70,11 @@ namespace Infrastructure.Identity
                 UserLoginInfo userLoginInfo = new UserLoginInfo(nameof(ELoginProvider.Facebook), userInfo.Id, nameof(ELoginProvider.Facebook));
                 var result = await _userManager.AddLoginAsync(user, userLoginInfo);
                 if(result.Succeeded) return user;
-                return null;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex.StackTrace, ex);
             }
-
             return null;
         }
 

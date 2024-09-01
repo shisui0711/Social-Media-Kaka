@@ -26,6 +26,7 @@ namespace Application.Identities.Commands.SignIn
         public async Task<TokenResponse> Handle(SignInCommand request, CancellationToken cancellationToken)
         {
             var user = await _identityService.FindByNameAsync(request.Username);
+            if(user == null) user = await _identityService.FindByEmailAsync(request.Username);
             Guard.Against.NotFound(request.Username, user);
 
             bool isValid = await _identityService.CheckPasswordAsync(user, request.Password);

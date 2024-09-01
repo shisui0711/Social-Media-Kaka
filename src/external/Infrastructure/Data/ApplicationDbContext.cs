@@ -311,11 +311,8 @@ namespace Infrastructure
 
                 entity.ToTable("users");
 
-                entity.HasIndex(e => e.Email, "users_email_idx");
-
-                entity.HasIndex(e => e.Email, "users_email_key").IsUnique();
-
-                entity.HasIndex(e => e.GoogleId, "users_googleId_key").IsUnique();
+                entity.HasIndex(e => e.NormalizedEmail, "users_email_key").IsUnique();
+                entity.HasIndex(e => e.NormalizedUserName, "user_username_key").IsUnique();
 
                 entity.Property(e => e.UsernameLastChange)
                     .HasColumnType("timestamp(3) without time zone");

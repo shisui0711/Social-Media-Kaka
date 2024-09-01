@@ -1,13 +1,12 @@
 
 import { cookies } from "next/headers"
 import { BASE_API_URL } from "./app/app.config"
-import { Google as ArticGoogle } from "arctic";
+import { Facebook, GitHub, Google } from "arctic";
 import { cache } from "react";
 import { Client, MyUserDto, } from "./app/web-api-client";
 import axios from "axios";
 import { parseStringify } from "./lib/utils";
-import NextAuth from "next-auth"
-import Google from "next-auth/providers/google"
+import { OAuth2Client } from "oslo/oauth2";
 
 export const validateRequest = cache(
   async(): Promise<
@@ -28,18 +27,31 @@ export const validateRequest = cache(
   }
 )
 
-export const google = new ArticGoogle(
+export const google = new Google(
   process.env.GOOGLE_CLIENT_ID!,
   process.env.GOOGLE_CLIENT_SECRET!,
-  `${process.env.NEXT_PUBLIC_BASE_URL}/api/auth/google/callback`
+  `${process.env.NEXT_PUBLIC_BASE_URL}/api/auth/callback/google`
 )
 
-export const { handlers, signIn, signOut, auth } = NextAuth({
-  providers: [
-    Google({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-    }),
-    
-  ],
-})
+export const facebook = new Facebook(
+  process.env.FACEBOOK_CLIENT_ID!,
+  process.env.FACEBOOK_CLIENT_SECRET!,
+  `${process.env.NEXT_PUBLIC_BASE_URL}/api/auth/callback/facebook`
+)
+
+export const github = new GitHub(
+  process.env.GITHUB_CLIENT_ID!,
+  process.env.GITHUB_CLIENT_SECRET!,
+  {
+    redirectURI: `${process.env.NEXT_PUBLIC_BASE_URL}/api/auth/callback/github`
+  }
+)
+
+export const zalo = new OAuth2Client(
+  process.env.ZALO_CLIENT_ID!,
+  process.env.ZALO_AUTHORIZE_ENDPOINT!,
+  process.env.ZALO_TOKEN_ENDPOINT!,
+  {
+    redirectURI: `${process.env.NEXT_PUBLIC_BASE_URL}/api/auth/callback/zalo`
+  }
+)

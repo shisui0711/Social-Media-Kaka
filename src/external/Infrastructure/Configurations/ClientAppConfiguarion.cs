@@ -4,6 +4,7 @@ namespace Infrastructure.Configurations
 {
     public class ClientAppConfiguarion
     {
-        public string BaseUri { get; set; } = null!;
+        public string BaseUrl { get; set; } = null!;
+        public string ResetPasswordEndpoint { get; set; } = null!;
     }
 }

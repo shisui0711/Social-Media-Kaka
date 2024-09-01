@@ -12,6 +12,8 @@ namespace Application.Common.Interfaces
     Task<User?> FindByIdAsync(string userId);
     Task<User?> FindByEmailAsync(string email);
     Task<string> GenerateEmailConfirmationTokenAsync(User user);
+    Task<string> GeneratePasswordResetTokenAsync(User user);
+    Task<bool> ResetPasswordAsync(User user, string token, string newPassword);
     Task<bool> ConfirmEmailAsync(User user, string token);
     Task<bool> ChangePasswordAsync(User user, string currentPassword, string newPassword);
     Task<bool> CheckPasswordAsync(User user, string password);
