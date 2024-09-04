@@ -224,6 +224,162 @@ export class Client {
         return Promise.resolve<boolean>(null as any);
     }
 
+    changeEmail(command: ChangeEmailCommand, cancelToken?: CancelToken): Promise<boolean> {
+        let url_ = this.baseUrl + "/api/auth/change-email";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processChangeEmail(_response);
+        });
+    }
+
+    protected processChangeEmail(response: AxiosResponse): Promise<boolean> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = JSON.parse(resultData200);
+            return Promise.resolve<boolean>(result200);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<boolean>(null as any);
+    }
+
+    changePhoneNumber(command: ChangePhoneNumberCommand, cancelToken?: CancelToken): Promise<boolean> {
+        let url_ = this.baseUrl + "/api/auth/change-phone-number";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processChangePhoneNumber(_response);
+        });
+    }
+
+    protected processChangePhoneNumber(response: AxiosResponse): Promise<boolean> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = JSON.parse(resultData200);
+            return Promise.resolve<boolean>(result200);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<boolean>(null as any);
+    }
+
+    changePassword(command: ChangePasswordCommand, cancelToken?: CancelToken): Promise<boolean> {
+        let url_ = this.baseUrl + "/api/auth/change-password";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processChangePassword(_response);
+        });
+    }
+
+    protected processChangePassword(response: AxiosResponse): Promise<boolean> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = JSON.parse(resultData200);
+            return Promise.resolve<boolean>(result200);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<boolean>(null as any);
+    }
+
     googleSignIn(command: GoogleSignInCommand, cancelToken?: CancelToken): Promise<TokenResponse> {
         let url_ = this.baseUrl + "/api/auth/google-sign-in";
         url_ = url_.replace(/[?&]$/, "");
@@ -2927,6 +3083,58 @@ export class Client {
         return Promise.resolve<UserDto>(null as any);
     }
 
+    changeBirthDay(command: ChangeBirthDayCommand, cancelToken?: CancelToken): Promise<boolean> {
+        let url_ = this.baseUrl + "/api/users/change-birthday";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processChangeBirthDay(_response);
+        });
+    }
+
+    protected processChangeBirthDay(response: AxiosResponse): Promise<boolean> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = JSON.parse(resultData200);
+            return Promise.resolve<boolean>(result200);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<boolean>(null as any);
+    }
+
     addFriend(id: string, cancelToken?: CancelToken): Promise<void> {
         let url_ = this.baseUrl + "/api/users/friends/{id}";
         if (id === undefined || id === null)
@@ -3101,6 +3309,21 @@ export interface RecoveryPasswordCommand {
     newPassword: string;
 }
 
+export interface ChangeEmailCommand {
+    email: string;
+    password: string;
+}
+
+export interface ChangePhoneNumberCommand {
+    phoneNumber: string;
+    password: string;
+}
+
+export interface ChangePasswordCommand {
+    oldPassword: string;
+    newPassword: string;
+}
+
 export interface GoogleSignInCommand {
     idToken: string;
 }
@@ -3200,7 +3423,10 @@ export interface User extends IdentityUser {
     lastName: string;
     avatarUrl: string | undefined;
     bio: string | undefined;
+    birthDay: string | undefined;
     usernameLastChange: string | undefined;
+    emailLastChange: string | undefined;
+    birthDayLastChange: string | undefined;
     conversationId: string | undefined;
     created: string;
     createdBy: string | undefined;
@@ -3471,7 +3697,14 @@ export interface MyUserDto {
     avatarUrl: string | undefined;
     bio: string | undefined;
     email: string;
-    userNameLastChange: string;
+    emailConfirmed: boolean;
+    birthDay: string | undefined;
+    userNameLastChange: string | undefined;
+    emailLastChange: string | undefined;
+    birthDayLastChange: string | undefined;
+    phoneNumber: string | undefined;
+    phoneNumberConfirmed: boolean;
+    twoFactorEnabled: boolean;
     created: string;
     followers: FollowDto[];
     followings: FollowDto[];
@@ -3501,6 +3734,10 @@ export interface UpdateMyProfileCommand {
     firstName: string;
     lastName: string;
     bio: string | undefined;
+}
+
+export interface ChangeBirthDayCommand {
+    birhtDay: string;
 }
 
 export interface FriendInfo {

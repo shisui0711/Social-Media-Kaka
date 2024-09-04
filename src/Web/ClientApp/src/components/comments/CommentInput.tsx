@@ -1,4 +1,3 @@
-
 import { Loader2, SendHorizonal } from "lucide-react";
 import { useState } from "react";
 import { Button } from "../ui/button";
@@ -6,8 +5,9 @@ import { Input } from "../ui/input";
 import { useSubmitCommentMutation } from "./mutations";
 import { useSignalR } from "@/providers/SignalRProvider";
 import { useAuthorization } from "@/providers/AuthorizationProvider";
-import { useQueryClient } from "@tanstack/react-query";
 import { PostDto } from "@/app/web-api-client";
+import EmojiDropdown from "../EmojiDropdown";
+
 
 interface CommentInputProps {
   post: PostDto;
@@ -15,10 +15,8 @@ interface CommentInputProps {
 
 export default function CommentInput({ post }: CommentInputProps) {
   const [input, setInput] = useState("");
-  const { sendNotification } = useSignalR()
-  const { user: signInUser } = useAuthorization()
-
-  const queryClient = useQueryClient();
+  const { sendNotification } = useSignalR();
+  const { user: signInUser } = useAuthorization();
 
   const mutation = useSubmitCommentMutation(post.id);
 
@@ -34,16 +32,23 @@ export default function CommentInput({ post }: CommentInputProps) {
       },
       {
         onSuccess: async () => {
-          setInput("")
-          if(post.userId !== signInUser.id)
-            sendNotification(post.userId,`${signInUser.displayName} đã bình luận bài viết của bạn`)
+          setInput("");
+          if (post.userId !== signInUser.id)
+            sendNotification(
+              post.userId,
+              `${signInUser.displayName} đã bình luận bài viết của bạn`
+            );
         },
-      },
+      }
     );
   }
 
   return (
-    <form className="flex w-full items-center gap-2" onSubmit={onSubmit}>
+    <form
+      className="relative flex w-full items-center gap-2"
+      onSubmit={onSubmit}
+    >
+      <EmojiDropdown className="absolute right-14" onEmojiClick={(emoji)=> setInput(prev=>prev.concat(emoji))} />
       <Input
         placeholder="Viết bình luận..."
         value={input}

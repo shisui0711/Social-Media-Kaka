@@ -8,6 +8,7 @@ import { useAuthorization } from "@/providers/AuthorizationProvider";
 import { calculateTimeDifference, cn } from "@/lib/utils";
 import CommentNestedButton from "./CommentNestedButton";
 import ListNestedComment from "./ListNestedComment";
+import CommentMoreButton from "./CommentMoreButton";
 
 const CommentComponent = ({ comment }: { comment: CommentDto }) => {
   const { user } = useAuthorization();
@@ -15,8 +16,7 @@ const CommentComponent = ({ comment }: { comment: CommentDto }) => {
 
   return (
     <article className="flex flex-col rounded-xl p-7">
-      <div className="flex items-start justify-between">
-        <div className="flex flex-1 flex-row gap-3">
+      <div className="flex gap-3">
           <div className="flex flex-col items-center relative">
             <UserTooltip user={comment.user}>
               <Link href={`/profile/${comment.user?.userName}`}>
@@ -58,15 +58,10 @@ const CommentComponent = ({ comment }: { comment: CommentDto }) => {
                 <CommentNestedButton comment={comment} onClick={()=> setShowComments(!showComments)} />
               </div>
             </div>
-            {/* <div className="relative mt-5 flex items-center gap-2">
-              <div className="absolute -left-8 w-5 h-0.5 bg-neutral-800"/>
-              <div>
-              </div>
-            </div> */}
             {showComments && <ListNestedComment comment={comment} />}
           </div>
+          {comment.userId === user.id && <CommentMoreButton comment={comment} />}
         </div>
-      </div>
     </article>
   );
 };

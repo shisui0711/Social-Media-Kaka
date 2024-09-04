@@ -6,8 +6,6 @@ import RecoveryForm from './RecoveryForm';
 
 const RecoveryPage = ({searchParams:{token,email}}:{searchParams:{token:string,email:string}}) => {
   if(!token || !email) redirect("/sign-in");
-  console.log("Email:",email);
-  console.log("Token:",(token));
   return (
     <main className="h-screen flex-center p-5">
       <div className="flex h-full max-h-[40rem] w-full max-w-[32rem] rounded-2xl overflow-hidden bg-card shadow-2xl">
@@ -25,7 +23,7 @@ const RecoveryPage = ({searchParams:{token,email}}:{searchParams:{token:string,e
               Thiết lập lại mật khẩu của bạn
             </p>
           </div>
-          <RecoveryForm token={token} email={email} />
+          <RecoveryForm/>
           <Link
             href="/sign-in"
             className="block text-center hover:underline hover:text-blue-500"

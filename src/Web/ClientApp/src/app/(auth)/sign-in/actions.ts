@@ -12,6 +12,7 @@ export async function SignIn(
   credentials: SignInValues
 ): Promise<{ error?: string }>  {
   try {
+    console.log("Entry SignIn Method")
     const client = new Client(BASE_API_URL,axios.create({transformResponse: (data) => data}))
     const data = await client.signIn(credentials)
     cookies().set("token",data.token!, {
@@ -28,14 +29,14 @@ export async function SignIn(
     })
     redirect("/")
   } catch (error:any) {
+    console.log("Error throwed when sign in", error);
     if (isRedirectError(error)) throw error;
     if(error instanceof SwaggerException && error.status === 404){
       return { error: "Tên người dùng không tồn tại"}
     }else if(error instanceof SwaggerException && error.status === 401){
       return { error: "Mật khẩu không đúng"}
     }
-    console.log("Error throwed when sign in", error);
-    return { error: error.message};
+    return { error: error.message };
   }
 }
 

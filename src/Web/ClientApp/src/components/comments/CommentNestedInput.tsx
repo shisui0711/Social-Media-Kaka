@@ -20,7 +20,7 @@ export default function CommentNestedInput({ comment }: Props) {
 
   const queryClient = useQueryClient();
 
-  const mutation = useSubmitNestedCommentMutation(comment.id);
+  const mutation = useSubmitNestedCommentMutation(comment);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();

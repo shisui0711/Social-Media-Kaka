@@ -8,7 +8,7 @@ import {
 import { useToast } from "../ui/use-toast";
 import { deleteComment, submitComment, submitNestedComment } from "./action"
 import { useSignalR } from "@/providers/SignalRProvider";
-import { PaginatedListOfCommentDto } from "@/app/web-api-client";
+import { CommentDto, PaginatedListOfCommentDto } from "@/app/web-api-client";
 
 export function useSubmitCommentMutation(postId: string) {
   const { toast } = useToast();
@@ -71,7 +71,7 @@ export function useSubmitCommentMutation(postId: string) {
   return mutation;
 }
 
-export function useSubmitNestedCommentMutation(commentId: string) {
+export function useSubmitNestedCommentMutation(comment: CommentDto) {
   const { toast } = useToast();
 
   const queryClient = useQueryClient();
@@ -81,7 +81,7 @@ export function useSubmitNestedCommentMutation(commentId: string) {
     mutationFn: submitNestedComment,
     onSuccess: async (newComment) => {
       // sendComment(newComment,postId)
-      const queryKey: QueryKey = ["comments", commentId];
+      const queryKey: QueryKey = ["comments", comment.parentId ?? comment.id];
 
       await queryClient.cancelQueries({ queryKey });
 

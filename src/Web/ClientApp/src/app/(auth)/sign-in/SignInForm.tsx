@@ -44,7 +44,10 @@ const SignInForm = () => {
 
   async function onSubmit(values: SignInValues) {
     startTransition(async () => {
+      console.log("Before SignIn")
       const { error } = await SignIn(values);
+      console.log("After SignIn")
+      if(error)
       toast({
         title: error,
         variant: "destructive",

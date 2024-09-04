@@ -33,7 +33,7 @@ const UserButton = ({ className }: { className?:string }) => {
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem>
-          <Link href={`/settings/security`} className='flex gap-2'
+          <Link href={`/settings/information`} className='flex gap-2'
             onClick={()=>setOpen(false)}
           >
             <Settings className='size-4'/>

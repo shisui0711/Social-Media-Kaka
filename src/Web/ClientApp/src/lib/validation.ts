@@ -59,6 +59,34 @@ export const recoveryPasswordSchema = z.object({
 
 export type RecoveryPasswordValues = z.infer<typeof recoveryPasswordSchema>
 
+export const changeEmailSchema = z.object({
+  email: z
+  .string()
+  .trim()
+  .min(1, "Email không được để trống")
+  .email("Email không hợp lệ"),
+  password: z.string().trim().min(1, "Mật khẩu không được để trống")
+});
+
+export type ChangeEmailValues = z.infer<typeof changeEmailSchema>
+
+export const changePhoneNumberSchema = z.object({
+  phoneNumber: z.string().trim().min(1, "Số điện thoại không được để trống")
+    .refine((phone) => /^\+\d{10,15}$/.test(phone), "Số điện thoại không hợp lệ"),
+    password: z.string().trim().min(1, "Mật khẩu không được để trống")
+});
+
+export type ChangePhoneNumberValues = z.infer<typeof changePhoneNumberSchema>
+
+export const changePasswordSchema = z.object({
+  oldPassword: z.string().trim().min(1, "Mật khẩu không được để trống"),
+  newPassword: z.string().trim().min(8, "Mật khẩu phải có ít nhất 8 ký tự")
+  .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/,"Mật khẩu phải gồm ký tự in hoa, in thường, số và ký tự đặc biệt"),
+  repassword: z.string().trim().min(1, "Mật khẩu không được để trống"),
+});
+
+export type ChangePasswordValues = z.infer<typeof changePasswordSchema>
+
 export const createPostSchema = z.object({
   content: z.string().trim().min(1, "Nội dung không được để trống"),
   medias: z
