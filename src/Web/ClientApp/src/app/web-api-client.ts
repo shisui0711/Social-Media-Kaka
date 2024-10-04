@@ -3727,7 +3727,6 @@ export interface User extends IdentityUser {
     usernameLastChange: string | undefined;
     emailLastChange: string | undefined;
     birthDayLastChange: string | undefined;
-    conversationId: string | undefined;
     created: string;
     createdBy: string | undefined;
     lastModified: string;
@@ -3819,7 +3818,6 @@ export interface ConversationMember extends BaseEntity {
 
 export interface Conversation extends BaseAuditableEntity {
     title: string | undefined;
-    isGroup: boolean;
     conversationMembers: ConversationMember[];
     messages: Message[];
 }

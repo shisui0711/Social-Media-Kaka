@@ -107,9 +107,6 @@ namespace Infrastructure
                 entity.ToTable("conversations");
 
                 entity.Property(e => e.Id).HasColumnName("id");
-                entity.Property(e => e.IsGroup)
-                    .HasDefaultValue(false)
-                    .HasColumnName("isGroup");
                 entity.Property(e => e.Title).HasColumnName("title");
 
                 entity.HasMany(x => x.ConversationMembers).WithOne(x => x.Conversation)

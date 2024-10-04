@@ -32,7 +32,6 @@ namespace Application.Conversations.Commands.AddUserToConversation
             });
             if (conversation.ConversationMembers.Count > 2)
             {
-                conversation.IsGroup = true;
                 conversation.Title = string.Join(",", conversation.ConversationMembers.Select(x => x.User.DisplayName));
             }
             await _context.SaveChangesAsync(cancellationToken);
