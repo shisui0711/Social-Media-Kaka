@@ -1,4 +1,4 @@
-import { MyUserDto } from "@/app/web-api-client";
+
 import React from "react";
 import {
   Dialog,
@@ -6,9 +6,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
-import { ChevronRight, Pencil } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import {
   Form,
@@ -19,19 +17,15 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import {
-  changePasswordSchema,
-  ChangePasswordValues,
-  changePhoneNumberSchema,
-  ChangePhoneNumberValues,
+  otpSchema,
+  OtpValues,
 } from "@/lib/validation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Loader } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useMutation } from "@tanstack/react-query";
-import { ChangePassowrd } from "../information/actions";
 import { useToast } from "@/components/ui/use-toast";
 import {
   InputOTP,
@@ -39,25 +33,28 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
+import { useRouter } from "next/navigation";
+import { VerifyTwoFactor } from "./actions";
 
 interface Props {
-  user: MyUserDto;
   open: boolean;
-  onOpenChange: (open: boolean) => void;
+  onClose: () => void;
 }
 
-const EnableTwoFactorDialog = ({ user, open, onOpenChange }: Props) => {
+const EnableTwoFactorDialog = ({ open, onClose }: Props) => {
   const { toast } = useToast();
+  const router = useRouter();
   const { isPending, mutate } = useMutation({
-    mutationFn: ChangePassowrd,
-    onSuccess(data) {
-      if (data) {
+    mutationFn: VerifyTwoFactor,
+    onSuccess(success) {
+      if (success) {
         toast({
-          title: "Cập nhật mật khẩu thành công",
+          title: "Đã bật xác thực 2 yếu tố",
         });
+        router.refresh();
       } else {
         toast({
-          title: "Mật khẩu hiện tại không đúng",
+          title: "Mã xác thực không hợp lệ",
           variant: "destructive",
         });
       }
@@ -69,34 +66,21 @@ const EnableTwoFactorDialog = ({ user, open, onOpenChange }: Props) => {
       });
     },
   });
-  const form = useForm<ChangePasswordValues>({
-    resolver: zodResolver(changePasswordSchema),
+  const form = useForm<OtpValues>({
+    resolver: zodResolver(otpSchema),
     defaultValues: {
-      oldPassword: "",
-      newPassword: "",
-      repassword: "",
+      otp: "",
     },
   });
 
-  async function onSubmit(values: ChangePasswordValues) {
-    if (values.newPassword !== values.repassword) {
-      toast({
-        title: "Mật khẩu mới không khớp",
-        variant: "destructive",
-      });
-      return;
+  function handleOpenChange(open: boolean) {
+    if (!open || !isPending) {
+      onClose();
     }
-    mutate(values);
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogTrigger className="w-full">
-        <Button className="flex items-center justify-between gap-2 w-full">
-          <p>Bật xác thực 2 yếu tố</p>
-          <ChevronRight size={15} />
-        </Button>
-      </DialogTrigger>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle className="text-center text-primary">
@@ -104,25 +88,43 @@ const EnableTwoFactorDialog = ({ user, open, onOpenChange }: Props) => {
           </DialogTitle>
           <Separator />
           <DialogDescription className="space-y-3">
-            <InputOTP maxLength={6} pattern={REGEXP_ONLY_DIGITS}>
-              <InputOTPGroup>
-                <InputOTPSlot index={0} />
-                <InputOTPSlot index={1} />
-                <InputOTPSlot index={2} />
-                <InputOTPSlot index={3} />
-                <InputOTPSlot index={4} />
-                <InputOTPSlot index={5} />
-              </InputOTPGroup>
-            </InputOTP>
-            <Button type="button" className="w-full">
-              Xác thực
-              <Loader
-                className={cn(
-                  "animate-spin ml-2 hidden",
-                  isPending && "inline-block"
-                )}
-              />
-            </Button>
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(({otp}) => mutate(otp))}
+                className="space-y-6"
+              >
+                <FormField
+                  control={form.control}
+                  name="otp"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <InputOTP maxLength={6} {...field} pattern={REGEXP_ONLY_DIGITS}>
+                          <InputOTPGroup>
+                            <InputOTPSlot index={0} />
+                            <InputOTPSlot index={1} />
+                            <InputOTPSlot index={2} />
+                            <InputOTPSlot index={3} />
+                            <InputOTPSlot index={4} />
+                            <InputOTPSlot index={5} />
+                          </InputOTPGroup>
+                        </InputOTP>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <Button type="submit" className="w-full">
+                  Xác thực
+                  <Loader
+                    className={cn(
+                      "animate-spin ml-2 hidden",
+                      isPending && "inline-block"
+                    )}
+                  />
+                </Button>
+              </form>
+            </Form>
           </DialogDescription>
         </DialogHeader>
       </DialogContent>

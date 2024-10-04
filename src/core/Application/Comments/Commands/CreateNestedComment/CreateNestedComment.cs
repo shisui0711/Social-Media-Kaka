@@ -57,7 +57,8 @@ namespace Application.Comments.Commands.CreateNestedComment
                 }
                 await _context.SaveChangesAsync(default);
                 await _context.Database.CommitTransactionAsync();
-                return _mapper.Map<CommentDto>(newComment);
+                return await _context.Comments.AsNoTracking()
+                .Where(x=>x.Id == newComment.Id).ProjectTo<CommentDto>(_mapper.ConfigurationProvider).FirstAsync();
             }
             catch (Exception)
             {

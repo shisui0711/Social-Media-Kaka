@@ -536,6 +536,202 @@ export class Client {
         return Promise.resolve<TokenResponse>(null as any);
     }
 
+    generateTwoFactorToken( cancelToken?: CancelToken): Promise<boolean> {
+        let url_ = this.baseUrl + "/api/auth/generate-2fa";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: AxiosRequestConfig = {
+            method: "POST",
+            url: url_,
+            headers: {
+                "Accept": "application/json"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processGenerateTwoFactorToken(_response);
+        });
+    }
+
+    protected processGenerateTwoFactorToken(response: AxiosResponse): Promise<boolean> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = JSON.parse(resultData200);
+            return Promise.resolve<boolean>(result200);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<boolean>(null as any);
+    }
+
+    verifyTwoFactorToken(command: VerifyTwoFactorTokenCommand, cancelToken?: CancelToken): Promise<boolean> {
+        let url_ = this.baseUrl + "/api/auth/verify-2fa";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processVerifyTwoFactorToken(_response);
+        });
+    }
+
+    protected processVerifyTwoFactorToken(response: AxiosResponse): Promise<boolean> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = JSON.parse(resultData200);
+            return Promise.resolve<boolean>(result200);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<boolean>(null as any);
+    }
+
+    checkPassword(command: CheckPasswordCommand, cancelToken?: CancelToken): Promise<boolean> {
+        let url_ = this.baseUrl + "/api/auth/password";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processCheckPassword(_response);
+        });
+    }
+
+    protected processCheckPassword(response: AxiosResponse): Promise<boolean> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = JSON.parse(resultData200);
+            return Promise.resolve<boolean>(result200);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<boolean>(null as any);
+    }
+
+    disableTwoFactor( cancelToken?: CancelToken): Promise<void> {
+        let url_ = this.baseUrl + "/api/auth/disable-2fa";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: AxiosRequestConfig = {
+            method: "POST",
+            url: url_,
+            headers: {
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processDisableTwoFactor(_response);
+        });
+    }
+
+    protected processDisableTwoFactor(response: AxiosResponse): Promise<void> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            return Promise.resolve<void>(null as any);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
     getRefreshToken( cancelToken?: CancelToken): Promise<TokenResponse> {
         let url_ = this.baseUrl + "/api/auth/refresh-token";
         url_ = url_.replace(/[?&]$/, "");
@@ -1212,6 +1408,102 @@ export class Client {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
         }
         return Promise.resolve<ConversationDto>(null as any);
+    }
+
+    editTitleConversation(command: EditTitleConversationCommand, cancelToken?: CancelToken): Promise<void> {
+        let url_ = this.baseUrl + "/api/conversations/edit-title";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json",
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processEditTitleConversation(_response);
+        });
+    }
+
+    protected processEditTitleConversation(response: AxiosResponse): Promise<void> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            return Promise.resolve<void>(null as any);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
+    addUserToGroup(command: AddUserToConversationCommand, cancelToken?: CancelToken): Promise<void> {
+        let url_ = this.baseUrl + "/api/conversations/add-user";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json",
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processAddUserToGroup(_response);
+        });
+    }
+
+    protected processAddUserToGroup(response: AxiosResponse): Promise<void> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            return Promise.resolve<void>(null as any);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<void>(null as any);
     }
 
     getMyMessageWithPagination(conversationId: string | null, pageNumber: number, pageSize: number, cancelToken?: CancelToken): Promise<PaginatedListOfMessageDto> {
@@ -3336,6 +3628,14 @@ export interface GithubSignInCommand {
     accessToken: string;
 }
 
+export interface VerifyTwoFactorTokenCommand {
+    token: string;
+}
+
+export interface CheckPasswordCommand {
+    password: string;
+}
+
 export interface PaginatedListOfCommentDto {
     items: CommentDto[];
     pageNumber: number;
@@ -3527,7 +3827,6 @@ export interface Conversation extends BaseAuditableEntity {
 export interface Message extends BaseAuditableEntity {
     content: string;
     senderId: string;
-    receiverId: string;
     conversationId: string;
     seen: boolean;
     conversation: Conversation;
@@ -3625,7 +3924,6 @@ export interface ConversationMemberDto {
 export interface MessageDto extends BaseAuditableEntity {
     content: string;
     senderId: string;
-    receiverId: string;
     conversationId: string;
     seen: boolean;
     conversation: ConversationDto;
@@ -3633,6 +3931,16 @@ export interface MessageDto extends BaseAuditableEntity {
 
 export interface EnsureCreatedConversationCommand {
     receiverId: string;
+}
+
+export interface EditTitleConversationCommand {
+    conversationId: string;
+    title: string;
+}
+
+export interface AddUserToConversationCommand {
+    conversationId: string;
+    userId: string;
 }
 
 export interface PaginatedListOfMessageDto {
@@ -3646,7 +3954,6 @@ export interface PaginatedListOfMessageDto {
 
 export interface CreateMessageCommand {
     conversationId: string;
-    receiverId: string;
     senderId: string;
     content: string;
 }

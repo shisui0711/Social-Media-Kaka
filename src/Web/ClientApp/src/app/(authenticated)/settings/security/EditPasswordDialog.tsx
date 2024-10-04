@@ -9,10 +9,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { ChevronRight, Pencil } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { changePasswordSchema, ChangePasswordValues, changePhoneNumberSchema, ChangePhoneNumberValues } from "@/lib/validation";
+import { changePasswordSchema, ChangePasswordValues } from "@/lib/validation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
@@ -20,8 +20,8 @@ import { Button } from "@/components/ui/button";
 import { Loader } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useMutation } from "@tanstack/react-query";
-import { ChangePassowrd } from "../information/actions";
 import { useToast } from "@/components/ui/use-toast";
+import { ChangePassowrd } from "./actions";
 
 interface Props {
   user: MyUserDto;

@@ -11,7 +11,6 @@ namespace Application.Messages.Commands.CreateMessage
     public record CreateMessageCommand : IRequest<MessageDto>
     {
         public string ConversationId { get; set; } = null!;
-        public string ReceiverId { get; set; } = null!;
         public string SenderId { get; set; } = null!;
         public string Content { get; set; } = null!;
     }
@@ -30,16 +29,16 @@ namespace Application.Messages.Commands.CreateMessage
         public async Task<MessageDto> Handle(CreateMessageCommand request, CancellationToken cancellationToken)
         {
             var conversation = _context.Conversations.Find(request.ConversationId);
-            Guard.Against.NotFound(request.ConversationId,conversation);
+            Guard.Against.NotFound(request.ConversationId, conversation);
 
-            var message = (await _context.Messages.AddAsync(new Message{
+            var message = (await _context.Messages.AddAsync(new Message
+            {
                 Content = request.Content,
                 SenderId = request.SenderId,
-                ReceiverId = request.ReceiverId,
                 ConversationId = request.ConversationId
             })).Entity;
             await _context.SaveChangesAsync(cancellationToken);
-            return await _context.Messages.AsNoTracking().Where(x=>x.Id == message.Id)
+            return await _context.Messages.AsNoTracking().Where(x => x.Id == message.Id)
                     .AsSplitQuery()
                     .ProjectTo<MessageDto>(_mapper.ConfigurationProvider)
                     .FirstAsync();

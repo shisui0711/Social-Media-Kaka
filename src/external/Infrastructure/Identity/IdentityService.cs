@@ -9,21 +9,24 @@ namespace Infrastructure.Identity
 {
     public class IdentityService : IIdentityService
     {
-        private readonly UserManager<User> _userManager;
+    private readonly UserManager<User> _userManager;
     private readonly IUserClaimsPrincipalFactory<User> _userClaimsPrincipalFactory;
     private readonly IAuthorizationService _authorizationService;
+    private readonly ApplicationDbContext _context;
 
-    public IdentityService(
-        UserManager<User> userManager,
-        IUserClaimsPrincipalFactory<User> userClaimsPrincipalFactory,
-        IAuthorizationService authorizationService)
-    {
-        _userManager = userManager;
-        _userClaimsPrincipalFactory = userClaimsPrincipalFactory;
-        _authorizationService = authorizationService;
-    }
+        public IdentityService(
+            UserManager<User> userManager,
+            IUserClaimsPrincipalFactory<User> userClaimsPrincipalFactory,
+            IAuthorizationService authorizationService,
+            ApplicationDbContext context)
+        {
+            _userManager = userManager;
+            _userClaimsPrincipalFactory = userClaimsPrincipalFactory;
+            _authorizationService = authorizationService;
+            _context = context;
+        }
 
-    public async Task<IList<string>?> GetRolesAsync(string userId){
+        public async Task<IList<string>?> GetRolesAsync(string userId){
         var user = await _userManager.FindByIdAsync(userId);
         if(user == null) return null;
 ;        return await _userManager.GetRolesAsync(user);
@@ -109,6 +112,16 @@ namespace Infrastructure.Identity
             return await _userManager.GeneratePasswordResetTokenAsync(user);
         }
 
+        public async Task<string> GenerateTwoFactorTokenAsync(User user)
+        {
+            return await _userManager.GenerateTwoFactorTokenAsync(user,TokenOptions.DefaultPhoneProvider);
+        }
+
+        public async Task<bool> VerifyTwoFactorTokenAsync(User user,string token)
+        {
+            return await _userManager.VerifyTwoFactorTokenAsync(user,TokenOptions.DefaultPhoneProvider,token);
+        }
+
         public async Task<bool> ResetPasswordAsync(User user, string token, string newPassword)
         {
             var result = await _userManager.ResetPasswordAsync(user,token,newPassword);
@@ -138,6 +151,51 @@ namespace Infrastructure.Identity
         public Task<bool> CheckPasswordAsync(User user, string password)
         {
             return _userManager.CheckPasswordAsync(user, password);
+        }
+
+        public async Task<bool> ChangeEmailWithoutTokenAsync(User user, string newEmail)
+        {
+            await _context.Database.BeginTransactionAsync();
+            var token = await _userManager.GenerateChangeEmailTokenAsync(user,newEmail);
+            var result = await _userManager.ChangeEmailAsync(user,newEmail,token);
+            user.EmailConfirmed = false;
+            user.EmailLastChange = DateTime.Now;
+            var updateResult = await _userManager.UpdateAsync(user);
+            if(result.Succeeded && updateResult.Succeeded)
+            {
+                await _context.Database.CommitTransactionAsync();
+                return true;
+            }
+            else
+            {
+                await _context.Database.RollbackTransactionAsync();
+                return false;
+            }
+        }
+
+        public async Task<bool> ChangePhoneNumberWithoutTokenAsync(User user, string newPhoneNumber)
+        {
+            await _context.Database.BeginTransactionAsync();
+            var token = await _userManager.GenerateChangePhoneNumberTokenAsync(user,newPhoneNumber);
+            var result = await _userManager.ChangePhoneNumberAsync(user,newPhoneNumber,token);
+            user.PhoneNumberConfirmed = false;
+            var updateResult = await _userManager.UpdateAsync(user);
+            if(result.Succeeded && updateResult.Succeeded)
+            {
+                await _context.Database.CommitTransactionAsync();
+                return true;
+            }
+            else
+            {
+                await _context.Database.RollbackTransactionAsync();
+                return false;
+            }
+        }
+
+        public async Task DisableTwoFactor(User user)
+        {
+            user.TwoFactorEnabled = false;
+            await _userManager.UpdateAsync(user);
         }
     }
 }

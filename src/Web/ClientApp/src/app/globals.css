@@ -2,12 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
-
-
 @layer base {
   :root {
     --background: 224, 5%, 95%;
-    --foreground: 222.2 84% 4.9%;
+    --foreground: 222.2, 84%, 4.9%;
 
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
@@ -15,8 +13,8 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 221.2 83.2% 53.3%;;
-    --primary-foreground: 210 40% 98%;
+    --primary: 221.2, 83.2%, 53.3%;
+    --primary-foreground: 210, 40%, 98%;
 
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
@@ -68,7 +66,6 @@
   }
 }
 
-
 @layer base {
   * {
     @apply border-border;
@@ -103,14 +100,14 @@
   .text-32 {
     @apply text-[32px] leading-normal;
   }
-  .comment:after{
+  .comment:after {
     content: "";
     position: absolute;
     top: 20px;
     left: -20px;
     width: 20px;
     height: 2px;
-    background-color: #ccc
+    background-color: #ccc;
   }
   .comment:before {
     content: "";
@@ -121,9 +118,10 @@
     height: 100%;
     border-left: 2px solid #ccc;
   }
+  .title-input {
+    @apply min-w-[78px] border-none bg-transparent px-0 text-left text-base font-semibold leading-[24px] focus-visible:ring-0 focus-visible:ring-offset-0 disabled:text-black sm:text-xl md:text-center !important;
+  }
 }
-
-
 
 /* Tiptap override */
 .tiptap p.is-editor-empty:first-child::before {
@@ -136,7 +134,7 @@
   width: 100%;
 }
 
-.tiptap.ProseMirror{
+.tiptap.ProseMirror {
   outline: none;
 }
 

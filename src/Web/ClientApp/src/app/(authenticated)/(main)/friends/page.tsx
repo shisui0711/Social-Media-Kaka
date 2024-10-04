@@ -4,11 +4,16 @@ import ListAllFriend from "./ListAllFriend";
 import ListSendedFriend from "./ListSendedFriend";
 import ListReceivedFriend from "./ListReceivedFriend";
 
-const FriendPage = () => {
+const FriendPage = ({
+  searchParams: { tab },
+}: {
+  searchParams: { tab: string };
+}) => {
+  const isValidTab = tab === "all" || tab ==="received" || tab === "sended";
   return (
     <main className="flex w-full min-w-0 gap-5">
       <div className="rounded-2xl p-3 w-full min-w-0 space-y-5">
-        <Tabs defaultValue="all">
+        <Tabs defaultValue={isValidTab ? tab : "all"}>
           <TabsList className="w-full bg-card flex">
             <TabsTrigger
               value="all"

@@ -96,23 +96,23 @@ namespace WebApi
                     ValidateIssuerSigningKey = true
                 };
                 options.Events = new JwtBearerEvents
-            {
-                OnMessageReceived = context =>
                 {
-                    var accessToken = context.Request.Query["access_token"];
-
-                    // If the request is for our hub...
-                    var path = context.HttpContext.Request.Path;
-                    if (!string.IsNullOrEmpty(accessToken) &&
-                        path.StartsWithSegments("/project-hub"))
+                    OnMessageReceived = context =>
                     {
-                        // Read the token out of the query string
-                        context.Token = accessToken;
+                        var accessToken = context.Request.Query["access_token"];
+
+                        // If the request is for our hub...
+                        var path = context.HttpContext.Request.Path;
+                        if (!string.IsNullOrEmpty(accessToken) &&
+                            path.StartsWithSegments("/project-hub"))
+                        {
+                            // Read the token out of the query string
+                            context.Token = accessToken;
+                        }
+                        //Console.WriteLine($"Token received: {context.Token}");
+                        return Task.CompletedTask;
                     }
-                    //Console.WriteLine($"Token received: {context.Token}");
-                    return Task.CompletedTask;
-                }
-            };
+                };
             });
 
             services
@@ -120,8 +120,10 @@ namespace WebApi
             .AddRoles<IdentityRole>()
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddApiEndpoints();
-            services.AddAuthorization(options =>{
+            services.AddAuthorization(options =>
+            {
                 options.AddPolicy(Policies.CanPurge, policy => policy.RequireRole(Roles.Administrator));
+                options.AddPolicy(Policies.AccessToken, policy => policy.RequireRole("Access").Combine(options.DefaultPolicy));
                 options.AddPolicy(Policies.RefreshToken, policy => policy.RequireRole("Refresh"));
             });
 

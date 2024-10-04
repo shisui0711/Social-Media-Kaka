@@ -20,11 +20,10 @@ import {
   RecoveryPasswordValues,
 } from "@/lib/validation";
 import { RecoveryPassword } from "./actions";
-import { useRouter } from "next/navigation";
-import { useMySearchParams } from "@/app/hooks/useMySearchParams";
+import { useRouter, useSearchParams } from 'next/navigation';
 
 const RecoveryForm = () => {
-  const searchParams = useMySearchParams();
+  const searchParams = useSearchParams();
   const email = searchParams.get("email");
   const token = searchParams.get("token");
   const router = useRouter();

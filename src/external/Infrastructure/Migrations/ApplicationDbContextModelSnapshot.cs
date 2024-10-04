@@ -31,13 +31,13 @@ namespace Infrastructure.Migrations
                         .HasColumnName("id");
 
                     b.Property<DateTime>("Created")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("CreatedBy")
                         .HasColumnType("text");
 
                     b.Property<DateTime>("LastModified")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("text");
@@ -75,13 +75,13 @@ namespace Infrastructure.Migrations
                         .HasColumnName("content");
 
                     b.Property<DateTime>("Created")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("CreatedBy")
                         .HasColumnType("text");
 
                     b.Property<DateTime>("LastModified")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("text");
@@ -139,7 +139,7 @@ namespace Infrastructure.Migrations
                         .HasColumnName("id");
 
                     b.Property<DateTime>("Created")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("CreatedBy")
                         .HasColumnType("text");
@@ -151,7 +151,7 @@ namespace Infrastructure.Migrations
                         .HasColumnName("isGroup");
 
                     b.Property<DateTime>("LastModified")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("text");
@@ -193,7 +193,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("conversationMember", (string)null);
+                    b.ToTable("conversation_members", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.Follow", b =>
@@ -235,13 +235,13 @@ namespace Infrastructure.Migrations
                         .HasColumnName("accepted");
 
                     b.Property<DateTime>("Created")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("CreatedBy")
                         .HasColumnType("text");
 
                     b.Property<DateTime>("LastModified")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("text");
@@ -305,21 +305,16 @@ namespace Infrastructure.Migrations
                         .HasColumnName("conversationId");
 
                     b.Property<DateTime>("Created")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("CreatedBy")
                         .HasColumnType("text");
 
                     b.Property<DateTime>("LastModified")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("text");
-
-                    b.Property<string>("ReceiverId")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("receiverId");
 
                     b.Property<bool>("Seen")
                         .HasColumnType("boolean")
@@ -348,7 +343,7 @@ namespace Infrastructure.Migrations
                         .HasColumnType("text");
 
                     b.Property<DateTime>("Created")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("CreatedBy")
                         .HasColumnType("text");
@@ -358,7 +353,7 @@ namespace Infrastructure.Migrations
                         .HasColumnName("issuerId");
 
                     b.Property<DateTime>("LastModified")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("text");
@@ -408,13 +403,13 @@ namespace Infrastructure.Migrations
                         .HasColumnName("content");
 
                     b.Property<DateTime>("Created")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("CreatedBy")
                         .HasColumnType("text");
 
                     b.Property<DateTime>("LastModified")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("text");
@@ -439,13 +434,13 @@ namespace Infrastructure.Migrations
                         .HasColumnName("id");
 
                     b.Property<DateTime>("Created")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("CreatedBy")
                         .HasColumnType("text");
 
                     b.Property<DateTime>("LastModified")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("text");
@@ -485,6 +480,12 @@ namespace Infrastructure.Migrations
                     b.Property<string>("Bio")
                         .HasColumnType("text");
 
+                    b.Property<DateTime?>("BirthDay")
+                        .HasColumnType("timestamp(3) without time zone");
+
+                    b.Property<DateTime?>("BirthDayLastChange")
+                        .HasColumnType("timestamp(3) without time zone");
+
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("text");
@@ -493,7 +494,7 @@ namespace Infrastructure.Migrations
                         .HasColumnType("text");
 
                     b.Property<DateTime>("Created")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("CreatedBy")
                         .HasColumnType("text");
@@ -509,15 +510,15 @@ namespace Infrastructure.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("boolean");
 
+                    b.Property<DateTime?>("EmailLastChange")
+                        .HasColumnType("timestamp(3) without time zone");
+
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("GoogleId")
-                        .HasColumnType("text");
-
                     b.Property<DateTime>("LastModified")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("text");
@@ -572,12 +573,10 @@ namespace Infrastructure.Migrations
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex");
 
-                    b.HasIndex(new[] { "Email" }, "users_email_idx");
-
-                    b.HasIndex(new[] { "Email" }, "users_email_key")
+                    b.HasIndex(new[] { "NormalizedUserName" }, "user_username_key")
                         .IsUnique();
 
-                    b.HasIndex(new[] { "GoogleId" }, "users_googleId_key")
+                    b.HasIndex(new[] { "NormalizedEmail" }, "users_email_key")
                         .IsUnique();
 
                     b.ToTable("users", (string)null);
@@ -792,14 +791,14 @@ namespace Infrastructure.Migrations
                         .HasForeignKey("ConversationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("conversationMember_conversationId_fkey");
+                        .HasConstraintName("conversation_members_conversationId_fkey");
 
                     b.HasOne("Domain.Entities.User", "User")
                         .WithMany("ConversationMembers")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("conversationMember_userId_fkey");
+                        .HasConstraintName("conversation_members_userId_fkey");
 
                     b.Navigation("Conversation");
 

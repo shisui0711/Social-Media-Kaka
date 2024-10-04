@@ -37,7 +37,7 @@ export default function Notification({ notification }: NotificationProps) {
         return {
           message: `${notification.issuer?.displayName} đã gửi lời mời kết bạn`,
           icon: <UserRoundPlus className="size-7 text-primary " />,
-          href: `/profile/${notification.issuer?.userName}`,
+          href: `/friends?tab=received`,
         }
       case "ACCEPTFRIEND":
         return {

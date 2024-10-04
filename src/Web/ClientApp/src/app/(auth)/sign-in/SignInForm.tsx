@@ -44,14 +44,13 @@ const SignInForm = () => {
 
   async function onSubmit(values: SignInValues) {
     startTransition(async () => {
-      console.log("Before SignIn")
+      console.log("Before SignIn");
       const { error } = await SignIn(values);
-      console.log("After SignIn")
-      if(error)
-      toast({
-        title: error,
-        variant: "destructive",
-      });
+      if (error)
+        toast({
+          title: error,
+          variant: "destructive",
+        });
     });
   }
 
@@ -114,13 +113,16 @@ const SignInForm = () => {
       </div>
       <div className="flex-center gap-3">
         <GoogleSignInButton disabled={isRefreshing} />
-        <FacebookSignInButton disabled={isRefreshing}/>
-        <GithubSignInButton disabled={isRefreshing}/>
+        <FacebookSignInButton disabled={isRefreshing} />
+        <GithubSignInButton disabled={isRefreshing} />
         {/* <ZaloSignInButton disabled={isRefreshing}/> */}
       </div>
-      <Link href="/forgotten" className="text-center block hover:underline hover:text-blue-500">
-          Quên mật khẩu?
-          </Link>
+      <Link
+        href="/forgotten"
+        className="text-center block hover:underline hover:text-blue-500"
+      >
+        Quên mật khẩu?
+      </Link>
       <Link
         href="/sign-up"
         className="block text-center hover:underline hover:text-blue-500"

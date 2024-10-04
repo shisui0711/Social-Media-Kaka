@@ -20,7 +20,7 @@ namespace Infrastructure
         public virtual DbSet<Notification> Notifications { get; set; }
         public virtual DbSet<Post> Posts { get; set; }
         public virtual DbSet<PostMedia> PostMedias { get; set; }
-        public virtual DbSet<FriendRelation> FriendRelations { get; set ; }
+        public virtual DbSet<FriendRelation> FriendRelations { get; set; }
 
         static ApplicationDbContext()
         {
@@ -88,7 +88,7 @@ namespace Infrastructure
                 entity.Property(e => e.UserId).HasColumnName("userId");
 
                 entity.HasOne(d => d.ParentComment).WithMany(p => p.ChildrenComment)
-                    .HasForeignKey(d=>d.ParentId)
+                    .HasForeignKey(d => d.ParentId)
                     .OnDelete(DeleteBehavior.Cascade);
 
                 entity.HasOne(d => d.Post).WithMany(p => p.Comments)
@@ -122,7 +122,7 @@ namespace Infrastructure
             {
                 entity.HasKey(e => e.Id).HasName("conversationMember_pkey");
 
-                entity.ToTable("conversationMember");
+                entity.ToTable("conversation_members");
 
                 entity.Property(e => e.Id).HasColumnName("id");
                 entity.Property(e => e.ConversationId).HasColumnName("conversationId");
@@ -133,11 +133,11 @@ namespace Infrastructure
 
                 entity.HasOne(d => d.Conversation).WithMany(p => p.ConversationMembers)
                     .HasForeignKey(d => d.ConversationId)
-                    .HasConstraintName("conversationMember_conversationId_fkey");
+                    .HasConstraintName("conversation_members_conversationId_fkey");
 
                 entity.HasOne(d => d.User).WithMany(p => p.ConversationMembers)
                     .HasForeignKey(d => d.UserId)
-                    .HasConstraintName("conversationMember_userId_fkey");
+                    .HasConstraintName("conversation_members_userId_fkey");
             });
 
             modelBuilder.Entity<Follow>(entity =>
@@ -205,8 +205,9 @@ namespace Infrastructure
                     .HasConstraintName("likes _userId_fkey");
             });
 
-            modelBuilder.Entity<CommentLike>(entity => {
-                entity.HasKey(x => new { x.CommentId,x.UserId});
+            modelBuilder.Entity<CommentLike>(entity =>
+            {
+                entity.HasKey(x => new { x.CommentId, x.UserId });
                 entity.ToTable("comment_likes");
                 entity.HasIndex(e => new { e.UserId, e.CommentId }, "likes _userId_commentId_key").IsUnique();
 
@@ -231,7 +232,6 @@ namespace Infrastructure
                 entity.Property(e => e.Id).HasColumnName("id");
                 entity.Property(e => e.Content).HasColumnName("content");
                 entity.Property(e => e.ConversationId).HasColumnName("conversationId");
-                entity.Property(e => e.ReceiverId).HasColumnName("receiverId");
                 entity.Property(e => e.Seen).HasColumnName("seen");
                 entity.Property(e => e.SenderId).HasColumnName("senderId");
 
@@ -314,7 +314,13 @@ namespace Infrastructure
                 entity.HasIndex(e => e.NormalizedEmail, "users_email_key").IsUnique();
                 entity.HasIndex(e => e.NormalizedUserName, "user_username_key").IsUnique();
 
+                entity.Property(e => e.BirthDay)
+                    .HasColumnType("timestamp(3) without time zone");
                 entity.Property(e => e.UsernameLastChange)
+                    .HasColumnType("timestamp(3) without time zone");
+                entity.Property(e => e.BirthDayLastChange)
+                    .HasColumnType("timestamp(3) without time zone");
+                entity.Property(e => e.EmailLastChange)
                     .HasColumnType("timestamp(3) without time zone");
             });
         }

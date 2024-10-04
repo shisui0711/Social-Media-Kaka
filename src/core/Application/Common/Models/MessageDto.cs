@@ -11,8 +11,6 @@ namespace Application.Common.Models
 
         public string SenderId { get; set; } = null!;
 
-        public string ReceiverId { get; set; } = null!;
-
         public string ConversationId { get; set; } = null!;
 
         public bool Seen { get; set; }

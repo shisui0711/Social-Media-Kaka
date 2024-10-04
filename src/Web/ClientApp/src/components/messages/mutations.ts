@@ -14,7 +14,6 @@ import {
 import { usePathname, useRouter } from "next/navigation";
 import { useSignalR } from "@/providers/SignalRProvider";
 import {
-  CommentDto,
   ConversationDto,
   MessageDto,
   PaginatedListOfConversationDto,
@@ -138,3 +137,4 @@ export function useDeleteConversationMutation() {
 
   return mutation;
 }
+

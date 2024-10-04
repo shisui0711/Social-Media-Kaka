@@ -1,11 +1,6 @@
 "use client";
 
-import React, {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import * as signalR from "@microsoft/signalr";
 import { useToast } from "@/components/ui/use-toast";
 import { useAuthorization } from "./AuthorizationProvider";
@@ -17,7 +12,6 @@ import {
   PaginatedListOfUserDto,
   UserDto,
 } from "@/app/web-api-client";
-
 
 import { BASE_API_URL } from "@/app/app.config";
 
@@ -248,7 +242,6 @@ export const SignalRProvider: React.FC<{ children: React.ReactNode }> = ({
   const joinGroup = async (groupId: string) => {
     if (connection) {
       try {
-        console.log(`Join group:${groupId}`);
         await connection.invoke("JoinGroup", groupId);
       } catch (err) {
         console.error("Error joining group:", err);
@@ -301,7 +294,7 @@ export const SignalRProvider: React.FC<{ children: React.ReactNode }> = ({
         checkStatus,
         joinGroup,
         leaveGroup,
-        createConversation
+        createConversation,
       }}
     >
       {children}

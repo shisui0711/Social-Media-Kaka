@@ -19,7 +19,7 @@ interface ProfilePageProps {
 const getUser = cache(async (username: string) => {
   const token = cookies().get("token")?.value;
   if (!token) redirect("/sign-in");
-  const client = getApiClient(token)
+  const client = getApiClient(token);
   if (username.length === 36) {
     const user = await client.getUserInfoById(username)
     .catch( () => null);

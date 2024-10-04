@@ -12,6 +12,13 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.Infrastructure;
 using Application.Identities.Commands.RecoveryPassword;
+using Application.Identities.Commands.ChangeEmail;
+using Application.Identities.Commands.ChangePhoneNumber;
+using Application.Identities.Commands.ChangePassword;
+using Application.Identities.Commands.CheckPassword;
+using Application.Identities.Commands.GenerateTwoFactorToken;
+using Application.Identities.Commands.VerifyTwoFactorToken;
+using Application.Identities.Commands.DisableTwoFactor;
 
 namespace WebApi.Endpoints
 {
@@ -20,13 +27,24 @@ namespace WebApi.Endpoints
         public override void Map(WebApplication app)
         {
             app.MapGroup(this)
-                .MapPost(SignIn,"sign-in")
-                .MapPost(SignUp,"sign-up")
-                .MapPost(ForgottenPassword,"forgotten-password")
-                .MapPost(RecoveryPassword,"recovery-password")
+                .AllowAnonymous()
+                .MapPost(SignIn, "sign-in")
+                .MapPost(SignUp, "sign-up")
+                .MapPost(ForgottenPassword, "forgotten-password")
+                .MapPost(RecoveryPassword, "recovery-password")
+                .MapPost(ChangeEmail, "change-email")
+                .MapPost(ChangePhoneNumber, "change-phone-number")
+                .MapPost(ChangePassword, "change-password")
                 .MapPost(GoogleSignIn, "google-sign-in")
                 .MapPost(FacebookSignIn, "facebook-sign-in")
-                .MapPost(GithubSignIn,"github-sign-in");
+                .MapPost(GithubSignIn, "github-sign-in")
+                .MapPost(GenerateTwoFactorToken, "generate-2fa")
+                .MapPost(VerifyTwoFactorToken, "verify-2fa");
+
+            app.MapGroup(this)
+            .RequireAuthorization(Policies.AccessToken)
+            .MapPost(CheckPassword, "password")
+            .MapPost(DisableTwoFactor, "disable-2fa");
 
             app.MapGroup(this)
                 .RequireAuthorization(Policies.RefreshToken)
@@ -52,6 +70,24 @@ namespace WebApi.Endpoints
         public Task<bool> RecoveryPassword(ISender sender, [FromBody] RecoveryPasswordCommand command)
         => sender.Send(command);
 
+        public Task<bool> ChangeEmail(ISender sender, [FromBody] ChangeEmailCommand command)
+        => sender.Send(command);
+
+        public Task<bool> ChangePhoneNumber(ISender sender, [FromBody] ChangePhoneNumberCommand command)
+        => sender.Send(command);
+
+        public Task<bool> ChangePassword(ISender sender, [FromBody] ChangePasswordCommand command)
+        => sender.Send(command);
+
         public Task<TokenResponse> GetRefreshToken(ISender sender) => sender.Send(new GetRefreshTokenQuery());
+        public Task<bool> GenerateTwoFactorToken(ISender sender) => sender.Send(new GenerateTwoFactorTokenCommand());
+        public Task<bool> VerifyTwoFactorToken(ISender sender, [FromBody] VerifyTwoFactorTokenCommand command)
+        => sender.Send(command);
+        public Task<bool> CheckPassword(ISender sender, [FromBody] CheckPasswordCommand command)
+        => sender.Send(command);
+
+        public Task DisableTwoFactor(ISender sender)
+        => sender.Send(new DisableTwoFactorCommand());
+
     }
 }

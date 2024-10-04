@@ -8,12 +8,10 @@ import { ConversationDto } from "@/app/web-api-client";
 export async function submitMessage({
   conversation,
   senderId,
-  receiverId,
   message,
 }: {
   conversation: ConversationDto;
   senderId: string;
-  receiverId: string;
   message: string;
 }) {
   const token = cookies().get("token")?.value;
@@ -24,7 +22,6 @@ export async function submitMessage({
     .createMessage({
       conversationId: conversation.id,
       senderId,
-      receiverId,
       content: messageValidated,
     })
     .catch(() => {
@@ -52,6 +49,20 @@ export async function deleteConversation(id: string) {
   const client = await getApiClient(token);
   const deletedConversation = await client.removeConversation(id).catch(() => {
     throw new Error("Error deleting conversation");
-  })
+  });
   return deletedConversation;
+}
+
+export async function addUserToConversation({
+  conversationId,
+  userId,
+}: {
+  conversationId: string;
+  userId: string;
+}) {
+  const token = cookies().get("token")?.value;
+
+  if (!token) throw new Error("Unauthorized");
+  const client = await getApiClient(token);
+  await client.addUserToGroup({ conversationId, userId });
 }

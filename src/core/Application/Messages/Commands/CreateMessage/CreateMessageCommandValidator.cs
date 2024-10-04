@@ -6,10 +6,9 @@ namespace Application.Messages.Commands.CreateMessage
     {
         public CreateMessageCommandValidator()
         {
-            RuleFor(x=>x.ConversationId).NotEmpty().WithMessage("ConversationId is required");
+            RuleFor(x => x.ConversationId).NotEmpty().WithMessage("ConversationId is required");
             RuleFor(x => x.Content).NotEmpty().WithMessage("Content is required");
             RuleFor(x => x.SenderId).NotEmpty().WithMessage("SenderId is required");
-            RuleFor(x=>x.ReceiverId).NotEmpty().WithMessage("ReceiverId is required");
         }
     }
 }

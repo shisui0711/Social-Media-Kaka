@@ -10,7 +10,7 @@ import { Loader } from "lucide-react";
 import { useSignalR } from "@/providers/SignalRProvider";
 import { useApiClient } from "@/app/hooks/useApiClient";
 import { MessageDto } from "@/app/web-api-client";
-import { PaginatedListOfMessageDto } from '../../app/web-api-client';
+import { PaginatedListOfMessageDto } from "../../app/web-api-client";
 
 const ListMessage = ({ conversationId }: { conversationId: string }) => {
   const client = useApiClient();
@@ -27,7 +27,7 @@ const ListMessage = ({ conversationId }: { conversationId: string }) => {
   } = useInfiniteQuery({
     queryKey: ["messages", conversationId],
     queryFn: async ({ pageParam }): Promise<PaginatedListOfMessageDto> =>
-      client.getMyMessageWithPagination(conversationId, pageParam,10),
+      client.getMyMessageWithPagination(conversationId, pageParam, 10),
     initialPageParam: 1,
     getNextPageParam: (lastPage) => {
       if (lastPage.hasNextPage) {
@@ -48,14 +48,15 @@ const ListMessage = ({ conversationId }: { conversationId: string }) => {
   useEffect(() => {
     if (connection) {
       const handleReceiveMessage = (message: MessageDto) => {
+        console.log("Received message");
         if (message.conversationId === conversationId) {
-          setMessages(prevMessages => [...prevMessages, message]);
+          setMessages((prevMessages) => [...prevMessages, message]);
         }
       };
       connection.on("ReceiveMessage", handleReceiveMessage);
       return () => {
-        connection.off("ReceiveMessage",handleReceiveMessage);
-      }
+        connection.off("ReceiveMessage", handleReceiveMessage);
+      };
     }
   }, [connection, conversationId]);
 

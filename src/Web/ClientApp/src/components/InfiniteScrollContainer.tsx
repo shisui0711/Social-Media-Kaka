@@ -9,7 +9,7 @@ interface InfiniteScrollContainerProps extends React.PropsWithChildren {
 
 const InfiniteScrollContainer = ({ children,onBottomReached,className }: InfiniteScrollContainerProps) => {
 
-  const { ref } = useInView({
+    const { ref } = useInView({
     rootMargin: "200px",
     onChange(inView){
       if(inView){

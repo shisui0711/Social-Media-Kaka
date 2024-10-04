@@ -56,12 +56,12 @@ namespace Application.FunctionalTests
 
         public static async Task<string> RunAsDefaultUserAsync()
         {
-            return await RunAsUserAsync("test@local", "Testing1234!", Array.Empty<string>());
+            return await RunAsUserAsync("testlocal", "Testing1234!", Array.Empty<string>());
         }
 
         public static async Task<string> RunAsAdministratorAsync()
         {
-            return await RunAsUserAsync("administrator@local", "Administrator1234!", new[] { Roles.Administrator });
+            return await RunAsUserAsync("administratorlocal", "Administrator1234!", new[] { Roles.Administrator });
         }
 
         public static async Task<string> RunAsUserAsync(string userName, string password, string[] roles)
@@ -75,7 +75,7 @@ namespace Application.FunctionalTests
                 user = new User
                 {
                     UserName = userName,
-                    Email = userName,
+                    Email = userName +"@email.com",
                     FirstName = "admin",
                     LastName = "",
                     DisplayName = "Test"
@@ -123,6 +123,15 @@ namespace Application.FunctionalTests
             _userId = null;
         }
 
+        public static bool VerifyHashedPassword(User user,string password, string hashedPassword)
+        {
+            using var scope = _scopeFactory.CreateScope();
+
+            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
+
+            return userManager.PasswordHasher.VerifyHashedPassword(user, hashedPassword, password) == PasswordVerificationResult.Success;
+        }
+
         public static async Task<TEntity?> FindAsync<TEntity>(params object[] keyValues)
             where TEntity : class
         {
@@ -131,6 +140,16 @@ namespace Application.FunctionalTests
             var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
             return await context.FindAsync<TEntity>(keyValues);
+        }
+
+        public static async Task<TEntity?> FindNoTrackingAsync<TEntity>(Expression<Func<TEntity, bool>> predicate)
+            where TEntity : class
+        {
+            using var scope = _scopeFactory.CreateScope();
+
+            var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+            return await context.Set<TEntity>().AsNoTracking().FirstOrDefaultAsync(predicate);
         }
 
         public static async Task<TEntity?> FindByConditionAsync<TEntity>(Expression<Func<TEntity, bool>> predicate) where TEntity : class

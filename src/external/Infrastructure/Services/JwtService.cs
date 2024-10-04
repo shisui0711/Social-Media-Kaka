@@ -37,6 +37,10 @@ namespace Infrastructure.Services
             {
                 authClaims.Add(new Claim(ClaimTypes.Role, "Refresh"));
             }
+            else
+            {
+                authClaims.Add(new Claim(ClaimTypes.Role, "Access"));
+            }
             var userRoles = _userManager.GetRolesAsync(user).Result;
             if (userRoles != null)
             {
@@ -63,7 +67,7 @@ namespace Infrastructure.Services
 
         public async Task<(string token, string refreshToken)> RefreshToken()
         {
-            if(_currentUser.Id == null) throw new UnauthorizedAccessException();
+            if (_currentUser.Id == null) throw new UnauthorizedAccessException();
             var user = await _userManager.FindByIdAsync(_currentUser.Id) ?? throw new UnauthorizedAccessException();
             var newToken = GenerareToken(user!);
             var refreshToken = GenerareToken(user, true);

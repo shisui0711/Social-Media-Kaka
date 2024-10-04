@@ -9,8 +9,6 @@ namespace Domain.Entities
 
         public string? Title { get; set; }
 
-        public bool IsGroup { get; set; }
-
         public virtual ICollection<ConversationMember> ConversationMembers { get; set; } = new List<ConversationMember>();
 
         public virtual ICollection<Message> Messages { get; set; } = new List<Message>();

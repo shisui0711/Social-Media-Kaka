@@ -56,7 +56,8 @@ namespace Application.Comments.Commands.CreateComment
                 }
                 await _context.SaveChangesAsync(default);
                 await _context.Database.CommitTransactionAsync();
-                return _mapper.Map<CommentDto>(comment);
+                return await _context.Comments.AsNoTracking()
+                .Where(x=>x.Id == comment.Id).ProjectTo<CommentDto>(_mapper.ConfigurationProvider).FirstAsync();
             }
             catch (Exception)
             {

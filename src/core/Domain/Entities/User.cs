@@ -11,8 +11,10 @@ namespace Domain.Entities
         public string LastName { get; set; } = null!;
         public string? AvatarUrl { get; set; }
         public string? Bio { get; set; }
+        public DateTime? BirthDay { get; set; }
         public DateTime? UsernameLastChange { get; set; }
-        public string? ConversationId { get; set; }
+        public DateTime? EmailLastChange { get; set; }
+        public DateTime? BirthDayLastChange { get; set; }
         public DateTime Created { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime LastModified { get; set; }

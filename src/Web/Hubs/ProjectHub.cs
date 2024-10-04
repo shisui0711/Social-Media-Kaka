@@ -73,16 +73,12 @@ namespace WebApi.Hubs
             await Clients.Group(message.ConversationId).SendAsync("ReceiveMessage", message);
         }
 
-        public bool IsUserConnected(string userId)
-        {
-            return UserIdToConnectionIdMap.ContainsKey(userId);
-        }
 
         public async Task JoinGroup(string conversationId)
         {
             if (Context.UserIdentifier != null)
             {
-                await Groups.AddToGroupAsync(Context.UserIdentifier, conversationId);
+                await Groups.AddToGroupAsync(Context.ConnectionId, conversationId);
             }
         }
 
@@ -90,38 +86,42 @@ namespace WebApi.Hubs
         {
             if (Context.UserIdentifier != null)
             {
-                await Groups.RemoveFromGroupAsync(Context.UserIdentifier, conversationId);
+                await Groups.RemoveFromGroupAsync(Context.ConnectionId, conversationId);
             }
         }
-
+        public bool IsUserConnected(string userId)
+        {
+            return UserIdToConnectionIdMap.ContainsKey(userId);
+        }
         public async Task SendNotification(string receiverId, string message)
         {
-            if(Context.UserIdentifier != null){
+            if (Context.UserIdentifier != null)
+            {
                 await Clients.User(receiverId).SendAsync("ReceiveNotification", Context.UserIdentifier, message);
             }
         }
 
         //WebRTC
 
-        public async Task AwakenUser(string receiverId,string callerName,string callerAvatar)
+        public async Task AwakenUser(string receiverId, string callerName, string callerAvatar)
         {
-            await Clients.User(receiverId).SendAsync("ReceiveAwaken",Context.UserIdentifier, callerName, callerAvatar);
+            await Clients.User(receiverId).SendAsync("ReceiveAwaken", Context.UserIdentifier, callerName, callerAvatar);
         }
 
-        public async Task ReadyToCall(string callerId, string receiverName, string receiverAvatar,bool hasVideo)
+        public async Task ReadyToCall(string callerId, string receiverName, string receiverAvatar, bool hasVideo)
         {
-            await Clients.User(callerId).SendAsync("ReceiveReadyCall", Context.UserIdentifier,receiverName,receiverAvatar,hasVideo);
+            await Clients.User(callerId).SendAsync("ReceiveReadyCall", Context.UserIdentifier, receiverName, receiverAvatar, hasVideo);
         }
 
-        public async Task StartCall(string receiverId, string callerName,string callerAvatar, bool hasVideo,object signal)
+        public async Task StartCall(string receiverId, string callerName, string callerAvatar, bool hasVideo, object signal)
         {
             await Clients.User(receiverId)
-            .SendAsync("ReceiveStartCall", Context.UserIdentifier, callerName, callerAvatar, hasVideo,signal);
+            .SendAsync("ReceiveStartCall", Context.UserIdentifier, callerName, callerAvatar, hasVideo, signal);
         }
 
-        public async Task AnswerCall(string callerId,object signal)
+        public async Task AnswerCall(string callerId, object signal)
         {
-            await Clients.User(callerId).SendAsync("ReceiveAnswerCall",signal);
+            await Clients.User(callerId).SendAsync("ReceiveAnswerCall", signal);
         }
 
         public async Task EndCall(string collaboratorId)
@@ -129,14 +129,14 @@ namespace WebApi.Hubs
             await Clients.User(collaboratorId).SendAsync("ReceiveEndCall");
         }
 
-        public async Task VideoChange(string collaboratorId,bool state)
+        public async Task VideoChange(string collaboratorId, bool state)
         {
-            await Clients.User(collaboratorId).SendAsync("ReceiveVideoChange",state);
+            await Clients.User(collaboratorId).SendAsync("ReceiveVideoChange", state);
         }
 
         public async Task AudioChange(string collaboratorId, bool state)
         {
-            await Clients.User(collaboratorId).SendAsync("ReceiveAudioChange",state);
+            await Clients.User(collaboratorId).SendAsync("ReceiveAudioChange", state);
         }
     }
 }

@@ -13,13 +13,7 @@ export async function ChangeEmail(values:ChangeEmailValues) : Promise<boolean>
   return await client.changeEmail(values);
 }
 
-export async function ChangePassowrd({oldPassword, newPassword}:ChangePasswordValues) : Promise<boolean>
-{
-  const token = cookies().get("token")?.value
-  if(!token) redirect('/sign-in')
-  const client = await getApiClient(token)
-  return await client.changePassword({oldPassword,newPassword})
-}
+
 
 export async function ChangePhoneNumber(values:ChangePhoneNumberValues) : Promise<boolean>
 {

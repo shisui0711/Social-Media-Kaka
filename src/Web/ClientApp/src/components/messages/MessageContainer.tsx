@@ -6,11 +6,11 @@ import MessageInput from "./MessageInput";
 import { useAuthorization } from "@/providers/AuthorizationProvider";
 import { Skeleton } from "../ui/skeleton";
 import { useSignalR } from "@/providers/SignalRProvider";
-import { Circle, CircleEllipsis, Phone, Video } from "lucide-react";
+import { Circle, Phone, Video } from "lucide-react";
 import ListMessage from "./ListMessage";
-import { ConversationDto, UserDto } from "@/app/web-api-client";
+import { ConversationDto } from "@/app/web-api-client";
 import { useApiClient } from "@/app/hooks/useApiClient";
-import { useQuery } from "@tanstack/react-query";
+import { useQueries, useQuery } from "@tanstack/react-query";
 import ConversationMoreButton from "./ConversationMoreButton";
 
 interface Props {
@@ -25,15 +25,18 @@ const MessageContainer = ({ conversation }: Props) => {
   const collaboratorId = conversation.conversationMembers.find(
     (x) => x.userId !== user.id
   )!.userId;
-  const { data, isPending, isError } = useQuery({
-    queryKey: ["user-info", collaboratorId],
-    queryFn: () => client.getUserInfoById(collaboratorId),
-    refetchOnWindowFocus: false,
-    staleTime: 1000 * 60 * 60, //1 hours
+
+  const results = useQueries({
+    queries: conversation.conversationMembers.map((item) => ({
+      queryKey: ["user-info", item.userId],
+      queryFn: () => client.getUserInfoById(item.userId),
+      refetchOnWindowFocus: false,
+      staleTime: 1000 * 60 * 60, //1 hours
+    })),
   });
 
   useEffect(() => {
-    checkStatus(collaboratorId).then((isOnline:boolean) => {
+    checkStatus(collaboratorId).then((isOnline: boolean) => {
       setStatus(isOnline);
     });
   }, [collaboratorId, checkStatus]);
@@ -73,12 +76,12 @@ const MessageContainer = ({ conversation }: Props) => {
       "_blank",
       `noopener,noreferrer,width=${1200},height=${600},left=${left},top=${top}`
     );
-  }
+  };
 
   return (
     <section className="relative h-full overflow-y-auto flex flex-col justify-between">
       <div className="sticky w-full rounded-t-2xl top-0 h-16 bg-card shadow-md flex items-center justify-between px-4">
-        {isPending ? (
+        {results.every((x) => x.isLoading) ? (
           <div className="flex items-center space-x-4">
             <Skeleton className="h-12 w-12 rounded-full" />
             <div className="space-y-2">
@@ -89,9 +92,17 @@ const MessageContainer = ({ conversation }: Props) => {
         ) : (
           <section className="flex w-full items-center justify-between">
             <div className="flex gap-2 items-center">
-              <UserAvatar />
-              <div className="flex flex-col">
-                <p className="font-semibold text-sm">{data?.displayName}</p>
+              {conversation.conversationMembers.length > 2 ? (
+                <UserAvatar />
+              ) : (
+                <UserAvatar avatarUrl={results[0].data?.avatarUrl} />
+              )}
+              <div className="flex flex-col w-40 md:w-56">
+                <p className="font-semibold text-sm line-clamp-1">
+                  {conversation.conversationMembers.length > 2
+                    ? conversation.title
+                    : results[0].data?.displayName}
+                </p>
                 {status ? (
                   <div className="flex items-center gap-1">
                     <Circle
@@ -109,13 +120,22 @@ const MessageContainer = ({ conversation }: Props) => {
               </div>
             </div>
             <div className="flex gap-3 items-center">
-              <button className="hover:bg-background p-2 rounded-2xl" onClick={handleOpenRegularCall}>
+              <button
+                className="hover:bg-background p-2 rounded-2xl"
+                onClick={handleOpenRegularCall}
+              >
                 <Phone className="text-primary fill-primary" />
               </button>
-              <button className="hover:bg-background p-2 rounded-2xl" onClick={handleOpenVideoCall}>
+              <button
+                className="hover:bg-background p-2 rounded-2xl"
+                onClick={handleOpenVideoCall}
+              >
                 <Video className="text-primary fill-primary" />
               </button>
-              <ConversationMoreButton conversation={conversation} className="text-primary hover:bg-background rounded-2xl"/>
+              <ConversationMoreButton
+                conversation={conversation}
+                className="text-primary hover:bg-background rounded-2xl"
+              />
             </div>
           </section>
         )}
@@ -124,11 +144,7 @@ const MessageContainer = ({ conversation }: Props) => {
         <ListMessage conversationId={conversation.id} />
       </section>
       <div className="sticky rounded-b-2xl bottom-1 w-full h-16 bg-card shadow-md flex items-center justify-between px-4">
-        <MessageInput
-          receiverId={collaboratorId}
-          senderId={user.id}
-          conversation={conversation}
-        />
+        <MessageInput senderId={user.id} conversation={conversation} />
       </div>
     </section>
   );

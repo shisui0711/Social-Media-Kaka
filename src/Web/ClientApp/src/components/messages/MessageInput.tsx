@@ -9,11 +9,10 @@ import { ConversationDto } from "@/app/web-api-client";
 
 interface MessageInputProps {
   senderId:string,
-  receiverId:string,
-  conversation?: ConversationDto
+  conversation: ConversationDto
 }
 
-export default function MessageInput({senderId,receiverId,conversation}:MessageInputProps) {
+export default function MessageInput({senderId,conversation}:MessageInputProps) {
   const [input, setInput] = useState("");
 
   const mutation = useSendMessageMutation();
@@ -27,7 +26,6 @@ export default function MessageInput({senderId,receiverId,conversation}:MessageI
       {
         conversation,
         message: input,
-        receiverId,
         senderId
       },
       {

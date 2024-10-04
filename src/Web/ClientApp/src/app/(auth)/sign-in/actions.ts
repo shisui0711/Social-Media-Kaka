@@ -10,34 +10,34 @@ import axios from "axios";
 
 export async function SignIn(
   credentials: SignInValues
-): Promise<{ error?: string }>  {
+): Promise<{ error?: string }> {
   try {
-    console.log("Entry SignIn Method")
-    const client = new Client(BASE_API_URL,axios.create({transformResponse: (data) => data}))
-    const data = await client.signIn(credentials)
-    cookies().set("token",data.token!, {
+    const client = new Client(
+      BASE_API_URL,
+      axios.create({ transformResponse: (data) => data })
+    );
+    const data = await client.signIn(credentials);
+    cookies().set("token", data.token!, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
       path: "/",
-    })
-    cookies().set("_kaka_refreshToken",data.refreshToken!, {
+    });
+    cookies().set("_kaka_refreshToken", data.refreshToken!, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
       maxAge: 60 * 60 * 24 * 30, // 30 days
-    })
-    redirect("/")
-  } catch (error:any) {
+    });
+    redirect("/");
+  } catch (error: any) {
     console.log("Error throwed when sign in", error);
     if (isRedirectError(error)) throw error;
-    if(error instanceof SwaggerException && error.status === 404){
-      return { error: "Tên người dùng không tồn tại"}
-    }else if(error instanceof SwaggerException && error.status === 401){
-      return { error: "Mật khẩu không đúng"}
+    if (error instanceof SwaggerException && error.status === 404) {
+      return { error: "Tên người dùng không tồn tại" };
+    } else if (error instanceof SwaggerException && error.status === 401) {
+      return { error: "Mật khẩu không đúng" };
     }
     return { error: error.message };
   }
 }
-
-

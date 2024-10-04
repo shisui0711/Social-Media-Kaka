@@ -1,5 +1,3 @@
-
-using Application.Common.Exceptions;
 using Application.Common.Interfaces;
 using Application.Common.Models;
 using Application.Common.Security;
@@ -33,19 +31,19 @@ namespace Application.Conversations.Commands.EnsureCreatedConversation
             try
             {
                 var conversation = await _context.Conversations.ProjectTo<ConversationDto>(_mapper.ConfigurationProvider)
-                    .Where(x => x.ConversationMembers
+                    .Where(x => x.ConversationMembers.Count == 2 && x.ConversationMembers
                     .Any(c => c.UserId == request.ReceiverId) && x.ConversationMembers.Any(x => x.UserId == _currentUser.Id))
                     .FirstOrDefaultAsync();
                 if (conversation == null)
                 {
                     var newConversation = new Conversation();
                     await _context.Conversations.AddAsync(newConversation);
-                    await _context.ConversationMembers.AddAsync(new ConversationMember
+                    await _context.ConversationMembers.AddAsync(new Domain.Entities.ConversationMember
                     {
                         ConversationId = newConversation.Id,
                         UserId = _currentUser.Id!
                     });
-                    await _context.ConversationMembers.AddAsync(new ConversationMember
+                    await _context.ConversationMembers.AddAsync(new Domain.Entities.ConversationMember
                     {
                         ConversationId = newConversation.Id,
                         UserId = request.ReceiverId

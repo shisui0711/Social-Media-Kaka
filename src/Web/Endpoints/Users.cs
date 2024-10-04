@@ -2,6 +2,7 @@
 
 using Application.Common.Models;
 using Application.Users.Commands.AddFriend;
+using Application.Users.Commands.ChangeBirthDay;
 using Application.Users.Commands.FollowUser;
 using Application.Users.Commands.UnFollowUser;
 using Application.Users.Commands.UnFriend;
@@ -41,11 +42,15 @@ namespace WebApi.Endpoints
                 .MapPost(FollowUser,"follow/{id}")
                 .MapPost(UpdateMyAvatar,"avatar")
                 .MapPost(UpdateMyProfile,"profile")
+                .MapPost(ChangeBirthDay,"change-birthday")
                 .MapDelete(UnFollowUser,"follow/{id}")
                 .MapPost(AddFriend,"friends/{id}")
                 .MapGet(GetFriendInfo,"friends/{id}")
                 .MapDelete(UnFriend,"friends/{id}");
         }
+
+        public Task<bool> ChangeBirthDay(ISender sender, [FromBody] ChangeBirthDayCommand command)
+        => sender.Send(command);
 
         public Task<MyUserDto> GetMyInfo(ISender sender , [AsParameters] GetMyInfoQuery query)
         => sender.Send(query);
