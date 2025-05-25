@@ -18,7 +18,6 @@ const SearchPage = ({searchParams:{q}}:{searchParams: {q: string}}) => {
         </div>
         <SearchResults query={q} />
       </div>
-      <RightSidebar/>
     </main>
   )
 }

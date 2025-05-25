@@ -4,6 +4,7 @@ using Application.Common.Models;
 using Application.Users.Commands.AddFriend;
 using Application.Users.Commands.ChangeBirthDay;
 using Application.Users.Commands.FollowUser;
+using Application.Users.Commands.RemoveUser;
 using Application.Users.Commands.UnFollowUser;
 using Application.Users.Commands.UnFriend;
 using Application.Users.Commands.UpdateMyAvatar;
@@ -18,6 +19,7 @@ using Application.Users.Queries.GetSendedFriendWithPagination;
 using Application.Users.Queries.GetSuggestionFollow;
 using Application.Users.Queries.GetUserInfo;
 using Application.Users.Queries.GetUserInfoById;
+using Application.Users.Queries.GetUsersWithPagination;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.Infrastructure;
@@ -30,39 +32,41 @@ namespace WebApi.Endpoints
         {
             app.MapGroup(this)
                 .RequireAuthorization()
-                .MapGet(GetMyInfo,"me")
-                .MapGet(GetUserInfo,"info")
-                .MapGet(GetUserInfoById,"info/{id}")
-                .MapGet(GetFollowInfo,"follow/{id}")
-                .MapGet(GetMyFriendByName,"friends")
-                .MapGet(GetMyFriendsWithPagination,"friends/all")
-                .MapGet(GetSendedFriendWithPagination,"friends/sended")
-                .MapGet(GetReceivedFriendWithPagination,"friends/received")
-                .MapGet(GetSuggestionFollow,"suggestion")
-                .MapPost(FollowUser,"follow/{id}")
-                .MapPost(UpdateMyAvatar,"avatar")
-                .MapPost(UpdateMyProfile,"profile")
-                .MapPost(ChangeBirthDay,"change-birthday")
-                .MapDelete(UnFollowUser,"follow/{id}")
-                .MapPost(AddFriend,"friends/{id}")
-                .MapGet(GetFriendInfo,"friends/{id}")
-                .MapDelete(UnFriend,"friends/{id}");
+                .MapGet(GetMyInfo, "me")
+                .MapGet(GetUserInfo, "info")
+                .MapGet(GetUserInfoById, "info/{id}")
+                .MapGet(GetFollowInfo, "follow/{id}")
+                .MapGet(GetMyFriendByName, "friends")
+                .MapGet(GetMyFriendsWithPagination, "friends/all")
+                .MapGet(GetSendedFriendWithPagination, "friends/sended")
+                .MapGet(GetReceivedFriendWithPagination, "friends/received")
+                .MapGet(GetUsersWithPagination)
+                .MapGet(GetSuggestionFollow, "suggestion")
+                .MapPost(FollowUser, "follow/{id}")
+                .MapPost(UpdateMyAvatar, "avatar")
+                .MapPost(UpdateMyProfile, "profile")
+                .MapPost(ChangeBirthDay, "change-birthday")
+                .MapDelete(UnFollowUser, "follow/{id}")
+                .MapPost(AddFriend, "friends/{id}")
+                .MapGet(GetFriendInfo, "friends/{id}")
+                .MapDelete(UnFriend, "friends/{id}")
+                .MapDelete(RemoveUser, "{id}");
         }
 
         public Task<bool> ChangeBirthDay(ISender sender, [FromBody] ChangeBirthDayCommand command)
         => sender.Send(command);
 
-        public Task<MyUserDto> GetMyInfo(ISender sender , [AsParameters] GetMyInfoQuery query)
+        public Task<MyUserDto> GetMyInfo(ISender sender, [AsParameters] GetMyInfoQuery query)
         => sender.Send(query);
 
         public Task<UserDto> GetUserInfo(ISender sender, [AsParameters] GetUserInfoQuery query)
-        => sender.Send(new GetUserInfoQuery(){UserName = Uri.UnescapeDataString(query.UserName)});
+        => sender.Send(new GetUserInfoQuery() { UserName = Uri.UnescapeDataString(query.UserName) });
 
         public Task<UserDto> GetUserInfoById(ISender sender, [FromRoute] string id)
-        => sender.Send(new GetUserInfoByIdQuery(){UserId = id});
+        => sender.Send(new GetUserInfoByIdQuery() { UserId = id });
 
         public Task<FollowInfo> GetFollowInfo(ISender sender, [FromRoute] string id)
-        => sender.Send(new GetFollowInfoQuery(){UserId = id});
+        => sender.Send(new GetFollowInfoQuery() { UserId = id });
 
         public Task<IEnumerable<UserDto>> GetMyFriendByName
         (ISender sender, [AsParameters] GetMyFriendByNameQuery query)
@@ -73,10 +77,10 @@ namespace WebApi.Endpoints
         => sender.Send(query);
 
         public Task FollowUser(ISender sender, [FromRoute] string id)
-        => sender.Send(new FollowUserCommand(){UserId = id});
+        => sender.Send(new FollowUserCommand() { UserId = id });
 
         public Task UnFollowUser(ISender sender, [FromRoute] string id)
-        => sender.Send(new UnFollowUserCommand(){UserId = id});
+        => sender.Send(new UnFollowUserCommand() { UserId = id });
 
         public Task UpdateMyAvatar(ISender sender, [FromBody] UpdateMyAvatarCommand command)
         => sender.Send(command);
@@ -85,13 +89,13 @@ namespace WebApi.Endpoints
         => sender.Send(command);
 
         public Task AddFriend(ISender sender, [FromRoute] string id)
-        => sender.Send(new AddFriendCommand(){UserId = id});
+        => sender.Send(new AddFriendCommand() { UserId = id });
 
         public Task UnFriend(ISender sender, [FromRoute] string id)
-        => sender.Send(new UnFriendCommand(){UserId = id});
+        => sender.Send(new UnFriendCommand() { UserId = id });
 
-        public Task<FriendInfo> GetFriendInfo(ISender sender,[FromRoute] string id)
-        => sender.Send(new GetFriendInfoQuery(){UserId = id});
+        public Task<FriendInfo> GetFriendInfo(ISender sender, [FromRoute] string id)
+        => sender.Send(new GetFriendInfoQuery() { UserId = id });
 
         public Task<PaginatedList<UserDto>> GetMyFriendsWithPagination
         (ISender sender, [AsParameters] GetMyFriendsWithPaginationQuery query) => sender.Send(query);
@@ -101,5 +105,11 @@ namespace WebApi.Endpoints
 
         public Task<PaginatedList<UserDto>> GetReceivedFriendWithPagination
         (ISender sender, [AsParameters] GetReceivedFriendWithPaginationQuery query) => sender.Send(query);
+
+        public Task<PaginatedList<UserDto>> GetUsersWithPagination
+        (ISender sender, [AsParameters] GetUsersWithPaginationQuery query) => sender.Send(query);
+
+        public Task<UserDto> RemoveUser(ISender sender, [FromRoute] string id)
+        => sender.Send(new RemoveUserCommand() { UserId = id });
     }
 }

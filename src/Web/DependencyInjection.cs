@@ -13,7 +13,6 @@ using WebApi.Services;
 using NSwag;
 using NSwag.Generation.Processors.Security;
 using Microsoft.AspNetCore.Mvc;
-using System.Text.Json.Serialization;
 
 namespace WebApi
 {
@@ -66,6 +65,8 @@ namespace WebApi
                     builder.WithOrigins(
                     "http://localhost:3000",
                     "https://localhost:3000",
+                    "http://localhost:3001",
+                    "https://localhost:3001",
                     "http://192.168.1.22:3000",
                     "https://192.168.1.22:3000"
                     )

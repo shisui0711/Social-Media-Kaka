@@ -128,16 +128,20 @@ interface MediaPreviewProps {
 }
 
 const MediaPreview = ({ media }: MediaPreviewProps) => {
+  const [isVisible, setIsVisible] = useState(true);
   return (
     <>
       {media.type === "IMAGE" ? (
-        <Image
-          src={media.url}
-          alt={media.id}
-          width={500}
-          height={500}
-          className="mx-auto w-full max-h-[30rem] rounded-2xl"
-        />
+        isVisible && (
+          <Image
+            src={media.url}
+            alt={media.id}
+            width={500}
+            height={500}
+            onError={() => setIsVisible(false)}
+            className="mx-auto w-full max-h-[30rem] rounded-2xl"
+          />
+        )
       ) : (
         <div>
           <video

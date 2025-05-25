@@ -16,7 +16,6 @@ const BookMarkPage = () => {
         </div>
         <Bookmarks/>
       </div>
-      <RightSidebar/>
     </main>
   )
 }

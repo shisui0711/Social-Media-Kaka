@@ -7,7 +7,7 @@ namespace Application.Common.Interfaces
 {
     public interface IApplicationDbContext : IDisposable
     {
-        public DbSet<Bookmark> Bookmarks { get; set;}
+        public DbSet<Bookmark> Bookmarks { get; set; }
         public DbSet<Comment> Comments { get; set; }
         public DbSet<Conversation> Conversations { get; set; }
         public DbSet<ConversationMember> ConversationMembers { get; set; }
@@ -20,7 +20,10 @@ namespace Application.Common.Interfaces
         public DbSet<Post> Posts { get; set; }
         public DbSet<PostMedia> PostMedias { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<SearchLog> SearchLogs { get; set; }
+
         public DatabaseFacade Database { get; }
+
 
         EntityEntry<TEntity> Entry<TEntity>(TEntity entity) where TEntity : class;
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);

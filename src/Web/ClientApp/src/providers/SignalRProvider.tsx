@@ -74,9 +74,6 @@ export const SignalRProvider: React.FC<{ children: React.ReactNode }> = ({
       .start()
       .then(() => {
         console.log("Connected");
-        newConnection
-          .invoke("RegisterUserId", user.id)
-          .catch((err) => console.error("Error registering userId:", err));
         setConnection(newConnection);
       })
       .catch((err) => {});

@@ -1,6 +1,5 @@
 
 using System.Collections.Concurrent;
-using System.Security.Claims;
 using Application.Common.Interfaces;
 using Application.Common.Models;
 using AutoMapper;
@@ -21,16 +20,18 @@ namespace WebApi.Hubs
             _context = context;
         }
 
-        private static readonly ConcurrentDictionary<string, string> UserIdToConnectionIdMap = new();
-        public void RegisterUserId(string userId)
-        {
-            // Cập nhật mối quan hệ giữa connectionId và userId
-            UserIdToConnectionIdMap[userId] = Context.ConnectionId;
-        }
+        private static readonly ConcurrentDictionary<string, HashSet<string>> _userConnections = new();
         public override Task OnConnectedAsync()
         {
             if (Context.UserIdentifier != null)
             {
+                _userConnections.AddOrUpdate(Context.UserIdentifier,
+                _ => new HashSet<string> { Context.ConnectionId },
+                (_, connections) =>
+                {
+                    connections.Add(Context.ConnectionId);
+                    return connections;
+                });
                 Clients.All.SendAsync("UserStatusChanged", Context.UserIdentifier, true);
             }
             return base.OnConnectedAsync();
@@ -40,10 +41,24 @@ namespace WebApi.Hubs
         {
             if (Context.UserIdentifier != null)
             {
-                UserIdToConnectionIdMap.TryRemove(Context.UserIdentifier, out _);
-                Clients.All.SendAsync("UserStatusChanged", Context.UserIdentifier, false);
+                if (_userConnections.TryGetValue(Context.UserIdentifier, out var connections))
+                {
+                    connections.Remove(Context.ConnectionId);
+                    if (connections.Count == 0)
+                    {
+                        // Không còn kết nối nào -> Xóa userId khỏi danh sách
+                        _userConnections.TryRemove(Context.UserIdentifier, out _);
+                        // Xử lý khi user offline
+                        Clients.All.SendAsync("UserStatusChanged", Context.UserIdentifier, false);
+                    }
+                }
             }
             return base.OnDisconnectedAsync(exception);
+        }
+
+        public static int GetUniqueUsersCount()
+        {
+            return _userConnections.Count;
         }
 
         public async Task SendComment(CommentDto comment, string postId)
@@ -91,7 +106,7 @@ namespace WebApi.Hubs
         }
         public bool IsUserConnected(string userId)
         {
-            return UserIdToConnectionIdMap.ContainsKey(userId);
+            return _userConnections.ContainsKey(userId);
         }
         public async Task SendNotification(string receiverId, string message)
         {

@@ -17,6 +17,7 @@ type Props = {
 const ConversationComponent = ({ conversation, selected }: Props) => {
   const router = useRouter();
   const { connection } = useSignalR();
+  const { user } = useAuthorization();
   const client = useApiClient();
   const [lastMessage, setLastMessage] = useState<MessageDto | undefined>(
     !!conversation?.messages?.length ? conversation.messages[0] : undefined
@@ -62,13 +63,13 @@ const ConversationComponent = ({ conversation, selected }: Props) => {
       {conversation.conversationMembers.length > 2 ? (
         <UserAvatar />
       ) : (
-        <UserAvatar avatarUrl={results[0].data?.avatarUrl} />
+        <UserAvatar avatarUrl={results.filter(x=>x.data?.id !== user.id)[0].data?.avatarUrl} />
       )}
       <div className="sm:flex flex-col gap-1 w-full justify-center hidden">
         <h1 className="text-sm font-semibold line-clamp-1">
           {conversation.conversationMembers.length > 2
             ? results.map((item) => item.data?.displayName).join(",")
-            : results[0].data?.displayName}
+            : results.filter(x=>x.data?.id !== user.id)[0].data?.displayName}
         </h1>
         {lastMessage && (
           <div className="flex text-xs gap-2 justify-between">

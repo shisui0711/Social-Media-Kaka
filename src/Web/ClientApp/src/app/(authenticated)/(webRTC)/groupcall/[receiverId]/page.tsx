@@ -86,7 +86,7 @@ const CallPage = ({
         connection.off("ReceiveEndCall")
       };
     }
-  }, [connection, receiverId, stream]);
+  }, [AnswerCall, StartCall, connection, receiverId, stream]);
 
   useEffect(() => {
     if (connection) {
@@ -97,7 +97,7 @@ const CallPage = ({
         Awaken(receiverId);
       }
     }
-  }, [connection, isAnswer, receiverId]);
+  }, [Awaken, ReadyToCall, connection, hasVideo, isAnswer, receiverId]);
 
   useEffect(() => {
     const handle = () => {
@@ -107,7 +107,7 @@ const CallPage = ({
     };
     window.addEventListener("beforeunload", handle);
     return () => window.removeEventListener("beforeunload", handle);
-  }, [connection, receiverId]);
+  }, [EndCall, connection, receiverId]);
 
   return (
     <main className="flex flex-col justify-between h-screen">

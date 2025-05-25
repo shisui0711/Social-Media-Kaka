@@ -2,6 +2,7 @@
 
 import React, {
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useRef,
@@ -61,23 +62,23 @@ export const WebRtcProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }, [connection]);
 
-  const Awaken = (receiverId: string) => {
+  const Awaken  = useCallback((receiverId: string) => {
     try {
       connection!.invoke("AwakenUser", receiverId,me.displayName,me.avatarUrl);
     } catch (error) {
       console.log('error:', error)
     }
-  };
+  },[connection, me.avatarUrl, me.displayName]);
 
-  const ReadyToCall = (callerId: string,hasVideo:boolean) => {
+  const ReadyToCall = useCallback((callerId: string,hasVideo:boolean) => {
     try {
       connection!.invoke("ReadyToCall", callerId,me.displayName,me.avatarUrl,hasVideo);
     } catch (error) {
       console.log(error)
     }
-  };
+  },[connection, me.avatarUrl, me.displayName]);
 
-  const StartCall = (receiverId: string,hasVideo:boolean,stream:MediaStream) => {
+  const StartCall = useCallback((receiverId: string,hasVideo:boolean,stream:MediaStream) => {
     const peer = new Peer({ initiator: true, trickle: false, stream });
 
     peer.on("signal", (data: any) => {
@@ -97,9 +98,9 @@ export const WebRtcProvider: React.FC<{ children: React.ReactNode }> = ({
       peer.signal(signal);
     });
     peerRef.current = peer;
-  };
+  },[connection, me.avatarUrl, me.displayName]);
 
-  const AnswerCall = (callerId:string,signal: any,stream:MediaStream) => {
+  const AnswerCall = useCallback((callerId:string,signal: any,stream:MediaStream) => {
     setCallInProgress(true);
     const peer = new Peer({ initiator: false, trickle: false, stream });
 
@@ -117,15 +118,15 @@ export const WebRtcProvider: React.FC<{ children: React.ReactNode }> = ({
 
     peer.signal(signal);
     peerRef.current = peer;
-  };
+  },[connection]);
 
-  const EndCall = (collaboratorId:string) => {
+  const EndCall = useCallback((collaboratorId:string) => {
     console.log("Entry encall")
     connection?.invoke("EndCall",collaboratorId)
     setCallEnded(true);
     peerRef.current?.destroy();
     window.close();
-  };
+  },[connection]);
 
   return (
     <WebRtcContext.Provider

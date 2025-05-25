@@ -144,12 +144,6 @@ namespace Infrastructure.Migrations
                     b.Property<string>("CreatedBy")
                         .HasColumnType("text");
 
-                    b.Property<bool>("IsGroup")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("isGroup");
-
                     b.Property<DateTime>("LastModified")
                         .HasColumnType("timestamp without time zone");
 
@@ -466,6 +460,22 @@ namespace Infrastructure.Migrations
                     b.ToTable("post_media", (string)null);
                 });
 
+            modelBuilder.Entity("Domain.Entities.SearchLog", b =>
+                {
+                    b.Property<string>("KeyWord")
+                        .HasColumnType("text")
+                        .HasColumnName("keyword");
+
+                    b.Property<int>("SearchCount")
+                        .HasColumnType("integer")
+                        .HasColumnName("search_count");
+
+                    b.HasKey("KeyWord")
+                        .HasName("search_logs_pkey");
+
+                    b.ToTable("search_logs", (string)null);
+                });
+
             modelBuilder.Entity("Domain.Entities.User", b =>
                 {
                     b.Property<string>("Id")
@@ -488,9 +498,6 @@ namespace Infrastructure.Migrations
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
-                        .HasColumnType("text");
-
-                    b.Property<string>("ConversationId")
                         .HasColumnType("text");
 
                     b.Property<DateTime>("Created")

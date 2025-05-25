@@ -95,13 +95,19 @@ const MessageContainer = ({ conversation }: Props) => {
               {conversation.conversationMembers.length > 2 ? (
                 <UserAvatar />
               ) : (
-                <UserAvatar avatarUrl={results[0].data?.avatarUrl} />
+                <UserAvatar
+                  avatarUrl={
+                    results.filter((x) => x.data?.id !== user.id)[0]?.data
+                      ?.avatarUrl
+                  }
+                />
               )}
               <div className="flex flex-col w-40 md:w-56">
                 <p className="font-semibold text-sm line-clamp-1">
                   {conversation.conversationMembers.length > 2
                     ? conversation.title
-                    : results[0].data?.displayName}
+                    : results.filter((x) => x.data?.id !== user.id)[0]?.data
+                        ?.displayName}
                 </p>
                 {status ? (
                   <div className="flex items-center gap-1">

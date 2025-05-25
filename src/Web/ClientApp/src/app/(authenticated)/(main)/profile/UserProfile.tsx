@@ -1,4 +1,4 @@
-"use server"
+"use server";
 
 import FollowButton from "@/components/FollowButton";
 import FollowerCount from "@/components/FollowerCount";
@@ -10,6 +10,8 @@ import EditProfileButton from "./[username]/EditProfileButton";
 import Linkify from "@/components/Linkify";
 import { FollowInfo, FriendInfo, UserDto } from "@/app/web-api-client";
 import FriendCount from "@/components/FriendCount";
+import FriendButton from "@/components/FriendButton";
+import { useAuthorization } from "@/providers/AuthorizationProvider";
 
 interface UserProfileProps {
   user: UserDto;
@@ -24,12 +26,20 @@ const UserProfile = async ({ user, signedInUserId }: UserProfileProps) => {
     ),
   };
   const friendInfo: FriendInfo = {
-    friends: user.friendRelationReceivers.filter(x=>x.accepted).length
-    + user.friendRelationSenders.filter(x=>x.accepted).length,
-    isSended: user.friendRelationReceivers.some(x=>x.senderId === signedInUserId),
-    isFriend: user.friendRelationReceivers.some(x=>x.senderId === signedInUserId && x.accepted) ||
-              user.friendRelationSenders.some(x=>x.receiverId === signedInUserId && x.accepted),
-  }
+    friends:
+      user.friendRelationReceivers.filter((x) => x.accepted).length +
+      user.friendRelationSenders.filter((x) => x.accepted).length,
+    isSended: user.friendRelationReceivers.some(
+      (x) => x.senderId === signedInUserId
+    ),
+    isFriend:
+      user.friendRelationReceivers.some(
+        (x) => x.senderId === signedInUserId && x.accepted
+      ) ||
+      user.friendRelationSenders.some(
+        (x) => x.receiverId === signedInUserId && x.accepted
+      ),
+  };
 
   return (
     <div className="h-fit w-full space-y-5 rounded-2xl bg-card p-5 shadow-sm">
@@ -58,7 +68,25 @@ const UserProfile = async ({ user, signedInUserId }: UserProfileProps) => {
         {user.id === signedInUserId ? (
           <EditProfileButton user={user} />
         ) : (
-          <FollowButton userId={user.id} initialState={followerInfo} />
+          // <FollowButton userId={user.id} initialState={followerInfo} />
+          <FriendButton
+            userId={user.id}
+            initialState={{
+              friends:
+                user.friendRelationReceivers.filter((x) => x.accepted).length +
+                user.friendRelationSenders.filter((x) => x.accepted).length,
+              isSended: user.friendRelationReceivers.some(
+                (x) => x.senderId == signedInUserId
+              ),
+              isFriend:
+                user.friendRelationReceivers.some(
+                  (x) => x.senderId == signedInUserId && x.accepted
+                ) ||
+                user.friendRelationSenders.some(
+                  (x) => x.receiverId == signedInUserId && x.accepted
+                ),
+            }}
+          />
         )}
       </div>
       {user.bio && (

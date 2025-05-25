@@ -9,18 +9,19 @@ namespace Infrastructure
 {
     public class ApplicationDbContext : IdentityDbContext<User>, IApplicationDbContext
     {
-        public virtual DbSet<Bookmark> Bookmarks { get; set; }
-        public virtual DbSet<Comment> Comments { get; set; }
-        public virtual DbSet<Conversation> Conversations { get; set; }
-        public virtual DbSet<ConversationMember> ConversationMembers { get; set; }
-        public virtual DbSet<Follow> Follows { get; set; }
-        public virtual DbSet<Like> Likes { get; set; }
-        public virtual DbSet<CommentLike> CommentLikes { get; set; }
-        public virtual DbSet<Message> Messages { get; set; }
-        public virtual DbSet<Notification> Notifications { get; set; }
-        public virtual DbSet<Post> Posts { get; set; }
-        public virtual DbSet<PostMedia> PostMedias { get; set; }
-        public virtual DbSet<FriendRelation> FriendRelations { get; set; }
+        public virtual DbSet<Bookmark> Bookmarks { get; set; } = null!;
+        public virtual DbSet<Comment> Comments { get; set; } = null!;
+        public virtual DbSet<Conversation> Conversations { get; set; } = null!;
+        public virtual DbSet<ConversationMember> ConversationMembers { get; set; } = null!;
+        public virtual DbSet<Follow> Follows { get; set; } = null!;
+        public virtual DbSet<Like> Likes { get; set; } = null!;
+        public virtual DbSet<CommentLike> CommentLikes { get; set; } = null!;
+        public virtual DbSet<Message> Messages { get; set; } = null!;
+        public virtual DbSet<Notification> Notifications { get; set; } = null!;
+        public virtual DbSet<Post> Posts { get; set; } = null!;
+        public virtual DbSet<PostMedia> PostMedias { get; set; } = null!;
+        public virtual DbSet<FriendRelation> FriendRelations { get; set; } = null!;
+        public virtual DbSet<SearchLog> SearchLogs { get; set; } = null!;
 
         static ApplicationDbContext()
         {
@@ -54,6 +55,15 @@ namespace Infrastructure
             modelBuilder
                 .HasPostgresEnum("MediaType", new[] { "IMAGE", "VIDEO" })
                 .HasPostgresEnum("NotificationType", new[] { "LIKE", "FOLLOW", "COMMENT" });
+
+            modelBuilder.Entity<SearchLog>(entity =>
+            {
+                entity.ToTable("search_logs");
+                entity.HasKey(e => e.KeyWord).HasName("search_logs_pkey");
+
+                entity.Property(e => e.KeyWord).HasColumnName("keyword");
+                entity.Property(e => e.SearchCount).HasColumnName("search_count");
+            });
 
             modelBuilder.Entity<Bookmark>(entity =>
             {

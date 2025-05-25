@@ -6,6 +6,7 @@ using Application.Common.Models;
 using Application.Posts.Commands.CreatePost;
 using Application.Posts.Commands.LikePost;
 using Application.Posts.Commands.RemovePost;
+using Application.Posts.Commands.RemovePostWithAdmin;
 using Application.Posts.Commands.UnlikePost;
 using Application.Posts.Queries;
 using Application.Posts.Queries.GetBookmarkPostWithPagination;
@@ -28,22 +29,23 @@ namespace WebApi.Endpoints
         {
             app.MapGroup(this)
                 .RequireAuthorization()
-                .MapGet(SearchPostByQueryWithPagination,"search")
-                .MapGet(GetPostFeedWithPagination,"for-you")
-                .MapGet(GetFollowingPostWithPagination,"following")
-                .MapGet(GetBookmarkPostWithPagination,"bookmarks")
-                .MapGet(GetUserPostWithPagination,"user")
-                .MapGet(GetUserTaggedPostWithPagination,"tagged")
-                .MapGet(GetTrendingTags,"trending")
-                .MapGet(GetPostInfo,"{id}")
+                .MapGet(SearchPostByQueryWithPagination, "search")
+                .MapGet(GetPostFeedWithPagination, "for-you")
+                .MapGet(GetFollowingPostWithPagination, "following")
+                .MapGet(GetBookmarkPostWithPagination, "bookmarks")
+                .MapGet(GetUserPostWithPagination, "user")
+                .MapGet(GetUserTaggedPostWithPagination, "tagged")
+                .MapGet(GetTrendingTags, "trending")
+                .MapGet(GetPostInfo, "{id}")
                 .MapPost(CreatePost)
-                .MapDelete(RemovePost,"{id}")
-                .MapGet(GetLikeInfo,"{id}/like")
-                .MapPost(LikePost,"{id}/like")
-                .MapDelete(UnlikePost,"{id}/like")
-                .MapGet(GetBookmarkInfo,"{id}/bookmark")
-                .MapPost(BookmarkPost,"{id}/bookmark")
-                .MapDelete(UnBookmarkPost,"{id}/bookmark");
+                .MapDelete(RemovePost, "{id}")
+                .MapDelete(RemovePostWithAdmin, "admin/{id}")
+                .MapGet(GetLikeInfo, "{id}/like")
+                .MapPost(LikePost, "{id}/like")
+                .MapDelete(UnlikePost, "{id}/like")
+                .MapGet(GetBookmarkInfo, "{id}/bookmark")
+                .MapPost(BookmarkPost, "{id}/bookmark")
+                .MapDelete(UnBookmarkPost, "{id}/bookmark");
         }
 
         public Task<PaginatedList<PostDto>> SearchPostByQueryWithPagination
@@ -70,26 +72,29 @@ namespace WebApi.Endpoints
         public Task<PostDto> CreatePost(ISender sender, [FromBody] CreatePostCommand command) => sender.Send(command);
 
         public Task<PostDto> RemovePost(ISender sender, [FromRoute] string id)
-        => sender.Send(new RemovePostCommand(){PostId = id});
+        => sender.Send(new RemovePostCommand() { PostId = id });
 
         public Task<PostDto> GetPostInfo(ISender sender, [FromRoute] string id)
-        => sender.Send(new GetPostInfoQuery(){PostId = id});
+        => sender.Send(new GetPostInfoQuery() { PostId = id });
 
         public Task<LikeInfo> GetLikeInfo(ISender sender, [AsParameters] GetLikeInfoQuery query) => sender.Send(query);
 
         public Task LikePost(ISender sender, [FromRoute] string id)
-        => sender.Send(new LikePostCommand(){PostId = id});
+        => sender.Send(new LikePostCommand() { PostId = id });
 
         public Task UnlikePost(ISender sender, [FromRoute] string id) =>
-        sender.Send(new UnlikePostCommand(){PostId = id});
+        sender.Send(new UnlikePostCommand() { PostId = id });
 
         public Task<BookmarkInfo> GetBookmarkInfo(ISender sender, [AsParameters] GetBookmarkInfoQuery query)
         => sender.Send(query);
 
-        public Task BookmarkPost(ISender sender, [FromRoute] string  id)
-        => sender.Send(new BookmarkPostCommand(){PostId = id});
+        public Task BookmarkPost(ISender sender, [FromRoute] string id)
+        => sender.Send(new BookmarkPostCommand() { PostId = id });
 
         public Task UnBookmarkPost(ISender sender, [FromRoute] string id)
-        => sender.Send(new UnBookmarkPostCommand(){PostId = id});
+        => sender.Send(new UnBookmarkPostCommand() { PostId = id });
+
+        public Task<PostDto> RemovePostWithAdmin(ISender sender, [FromRoute] string id)
+        => sender.Send(new RemovePostWithAdminCommand() { PostId = id });
     }
 }
